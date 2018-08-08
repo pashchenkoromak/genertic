@@ -1,3 +1,4 @@
+#include "genom.hpp"
 #include <string>
 #include <vector>
 
@@ -5,7 +6,7 @@ class Unit
 {
 public:
    Unit();
-   std::string nextMove();
+   Operation nextMove();
    void changeEnergy(const long long value);
    friend bool operator==(const Unit& lhs, const Unit& rhs);
    friend bool operator!=(const Unit& lhs, const Unit& rhs);
@@ -14,5 +15,7 @@ public:
 private:
    int id;
    long long m_energy;
+   Genom m_genom;
    Unit(const int id);
+   answer m_worldAnswer;
 };

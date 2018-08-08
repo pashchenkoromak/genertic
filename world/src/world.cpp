@@ -13,16 +13,19 @@ void World::getNextMove()
 }
 
 
-void World::handleOperation(const std::string& operation, unitInWorld& unit)
+void World::handleOperation(const Operation& operation, unitInWorld& unit)
 {
-   // split operation with ' ' to vector of strings
-   std::istringstream iss(operation);
-   std::vector<std::string> operators{std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>{}};
-
-   if (operators[0] == "photosintes")
-      photosintes(unit);
-   else if (operators[0] == "go")
-      go(unit, operators[1]);
+   switch (operation.type)
+   {
+      case GO:
+         go(unit, operation.params[0]);
+         break;
+      case SEE:
+         see(unit, operation.params[0]);
+         break;
+      default:
+         photosintes(unit);
+   }
 }
 void World::go(unitInWorld& unit, const std::string& direction)
 {
