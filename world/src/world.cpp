@@ -23,6 +23,12 @@ void World::handleOperation(const Operation& operation, unitInWorld& unit)
       case SEE:
          see(unit, operation.params[0]);
          break;
+      case WAIT:
+         wait(unit);
+         break;
+      case DIE:
+         kill(unit);
+         break;
       default:
          photosintes(unit);
    }
@@ -37,7 +43,15 @@ void World::go(unitInWorld& unit, const std::string& direction)
    }
 }
 
-bool World::canGo(std::pair<uint, uint>& newPos)
+void World::wait(unitInWorld &unit)
+{}
+
+void World::kill(unitInWorld &unit)
+{
+    m_vecUnits[unit.pos.first][unit.pos.second] = Unit::NO_UNIT;
+}
+
+bool World::canGo(const std::pair<size_t, size_t>& newPos)
 {
    return (*m_vecUnits[newPos.first][newPos.second].unit == Unit::NO_UNIT);
 }
@@ -47,9 +61,9 @@ void World::photosintes(unitInWorld& unit)
    unit.unit->changeEnergy(unit.pos.first);
 }
 
-std::pair<uint, uint> World::getNewPos(const std::pair<uint, uint>& pos, const std::string& direction)
+std::pair<size_t, size_t> World::getNewPos(const std::pair<size_t, size_t>& pos, const std::string& direction)
 {
-   std::pair<uint, uint> newPos = pos;
+   std::pair<size_t, size_t> newPos = pos;
    if (direction == "left")
       newPos.second--;
    if (direction == "right")

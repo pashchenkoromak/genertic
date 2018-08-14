@@ -5,7 +5,7 @@
 struct unitInWorld
 {
    std::shared_ptr<Unit> unit;
-   std::pair<uint, uint> pos;
+   std::pair<size_t, size_t> pos;
 };
 
 class World
@@ -20,8 +20,11 @@ private:
    std::vector<std::string> split(const std::string& data);
    void handleOperation(const Operation& operation, unitInWorld& unit);
    void photosintes(unitInWorld& unit);
-   std::pair<uint, uint> getNewPos(const std::pair<uint, uint>& pos, const std::string& direction);
+   std::pair<size_t, size_t> getNewPos(const std::pair<size_t, size_t>& pos, const std::string& direction);
    void go(unitInWorld& unit, const std::string& direction);
    void see(unitInWorld& unit, const std::string& direction);
-   bool canGo(std::pair<uint, uint>& newPos);
+   void wait(unitInWorld& unit);
+   void clear(unitInWorld& unit);
+   void kill(unitInWorld& unit);
+   bool canGo(const std::pair<size_t, size_t>& newPos);
 };

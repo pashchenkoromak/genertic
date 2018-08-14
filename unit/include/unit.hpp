@@ -2,12 +2,12 @@
 #include <string>
 #include <vector>
 
-class Unit
-{
+class Unit {
 public:
    Unit();
    Operation nextMove();
    void changeEnergy(const long long value);
+   Unit& operator=(const Unit& rhs);
    friend bool operator==(const Unit& lhs, const Unit& rhs);
    friend bool operator!=(const Unit& lhs, const Unit& rhs);
    static const Unit NO_UNIT;

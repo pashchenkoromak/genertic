@@ -2,18 +2,32 @@
 #include <vector>
 
 namespace CommandLength {
-const uint GOTO = 6;
-const uint ANSWER = 1;
-const uint NUMBER = 4;
-const uint OPERATION = 6;
+const size_t GOTO = 6;
+const size_t ANSWER = 1;
+const size_t NUMBER = 4;
+const size_t OPERATION = 6;
+const size_t DIRECTION = 3;
 } // namespace CommandLength
 
 /// @brief list of possible answers by world
 enum answer
 {
    Empty,
-   Unit
+   UnitIsHere
 };
+
+enum directions {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+    UP_LEFT,
+    DOWN_LEFT,
+    UP_RIGHT,
+    DOWN_RIGHT
+};
+
+std::string directionToString(const directions& rhs);
 
 enum operationType
 {
@@ -39,7 +53,11 @@ enum operationType
    SEE,
    GO,
    WHILE,
-   ENERGY
+   ENERGY,
+   WAIT,
+   DIE,
+    /// NOTE: It must be the last one. Used as a way to count elements.
+   TYPE_COUNT
 };
 
 struct Operation
@@ -50,6 +68,7 @@ struct Operation
    /// @param[in] gen - sequence of bits
    /// @return type of operation
    static operationType parseOperationType(const std::vector<bool>& gen);
+   bool isWorldOperation();
    operationType type;
    std::vector<std::string> params;
 };
