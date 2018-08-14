@@ -5,6 +5,23 @@
 #include <sstream>
 #include <string>
 
+World::World()
+{
+    int n = 100;
+    int m = 100;
+    m_vecUnits.resize(n);
+    for(int i = 0; i < n; i++)
+    {
+        m_vecUnits[i].reserve(m);
+        for(int j = 0; j < m; j++)
+        {
+            if (rand() % 3 == 0)
+                row.push_back(std::make_shared<unitInWorld>(std::make_shared(Unit), std::make_pair(i, j)));
+            else row.push_back(std::make_shared<unitInWorld>(std::make_shared(Unit::NO_UNIT), std::make_pair(i, j)));
+        }
+    }
+}
+
 void World::getNextMove()
 {
    for (auto line : m_vecUnits)

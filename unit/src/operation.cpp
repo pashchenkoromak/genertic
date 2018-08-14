@@ -19,7 +19,8 @@ bool Operation::isWorldOperation()
         || operationType::SEE == type
         || operationType::GO == type
         || operationType::WAIT == type
-        || operationType::DIE;
+        || operationType::MAKE_CHILD == type
+        || operationType::DIE == type;
 }
 
 std::string directionToString(const directions& rhs)
