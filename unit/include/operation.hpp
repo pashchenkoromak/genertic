@@ -83,7 +83,7 @@ struct Operation
    /// @brief Get operation type, which is coded into vector
    /// @param[in] gen - sequence of bits
    /// @return type of operation
-   static operationType parseOperationType(const std::vector<bool>& gen);
+   static operationType parseOperationType(const std::vector<char>& gen);
    bool isWorldOperation();
    operationType type;
    std::vector<std::string> params;
