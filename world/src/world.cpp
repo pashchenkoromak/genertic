@@ -16,8 +16,8 @@ World::World()
         for(int j = 0; j < m; j++)
         {
             if (rand() % 3 == 0)
-                row.push_back(std::make_shared<unitInWorld>(std::make_shared(Unit), std::make_pair(i, j)));
-            else row.push_back(std::make_shared<unitInWorld>(std::make_shared(Unit::NO_UNIT), std::make_pair(i, j)));
+                m_vecUnits[i][j] = unitInWorld(std::make_shared<Unit>(), std::make_pair(i, j));
+            else m_vecUnits[i][j] = unitInWorld(std::make_shared<Unit>(Unit::NO_UNIT()), std::make_pair(i, j));
         }
     }
 }
@@ -46,6 +46,9 @@ void World::handleOperation(const Operation& operation, unitInWorld& unit)
       case DIE:
          kill(unit);
          break;
+      case MAKE_CHILD:
+         makeChild(unit);
+         break;
       default:
          photosintes(unit);
    }
@@ -60,17 +63,36 @@ void World::go(unitInWorld& unit, const std::string& direction)
    }
 }
 
+void World::see(unitInWorld &unit, const std::string &direction)
+{
+    auto newPos = getNewPos(unit.pos, direction);
+    if (*(unit.unit) == Unit::NO_UNIT())
+        unit.unit->setAnswer(answer::Empty);
+    else unit.unit->setAnswer(answer::UnitIsHere);
+}
+
 void World::wait(unitInWorld &unit)
 {}
 
 void World::kill(unitInWorld &unit)
 {
-    m_vecUnits[unit.pos.first][unit.pos.second] = Unit::NO_UNIT;
+    *unit.unit = Unit::NO_UNIT();
+}
+
+void World::makeChild(unitInWorld &unit)
+{
+    auto newPos = findPlace(unit.pos);
+    if (newPos == NULL_POS)
+        return;
+    unit.unit->changeEnergy(-ENERGY_FOR_CHILD);
+    m_vecUnits[newPos.first][newPos.second] = unitInWorld(std::make_shared<Unit>(*unit.unit), newPos);
+    if (rand() % 10000 < MUTATION_PROBABILITY * 10000)
+        m_vecUnits[newPos.first][newPos.second].unit->mutation();
 }
 
 bool World::canGo(const std::pair<size_t, size_t>& newPos)
 {
-   return (*m_vecUnits[newPos.first][newPos.second].unit == Unit::NO_UNIT);
+   return (*m_vecUnits[newPos.first][newPos.second].unit == Unit::NO_UNIT());
 }
 
 void World::photosintes(unitInWorld& unit)
@@ -81,34 +103,43 @@ void World::photosintes(unitInWorld& unit)
 std::pair<size_t, size_t> World::getNewPos(const std::pair<size_t, size_t>& pos, const std::string& direction)
 {
    std::pair<size_t, size_t> newPos = pos;
-   if (direction == "left")
+   if (direction == directionToString(directions::LEFT))
       newPos.second--;
-   if (direction == "right")
+   if (direction == directionToString(directions::RIGHT))
       newPos.second++;
-   if (direction == "up")
+   if (direction == directionToString(directions::UP))
       newPos.first--;
-   if (direction == "down")
+   if (direction == directionToString(directions::DOWN))
       newPos.first++;
-   if (direction == "upleft")
+   if (direction == directionToString(directions::UP_LEFT))
    {
       newPos.first--;
       newPos.second--;
    }
-   if (direction == "upright")
+   if (direction == directionToString(directions::UP_RIGHT))
    {
       newPos.first--;
       newPos.second++;
    }
-   if (direction == "downleft")
+   if (direction == directionToString(directions::DOWN_LEFT))
    {
       newPos.first++;
       newPos.second--;
    }
-   if (direction == "downright")
+   if (direction == directionToString(directions::DOWN_RIGHT))
    {
       newPos.first++;
       newPos.second++;
    }
    newPos.first = (newPos.first + m_vecUnits.size()) % m_vecUnits.size();
    newPos.second = (newPos.first + m_vecUnits[0].size()) % m_vecUnits[0].size();
+}
+
+std::pair<size_t, size_t> World::findPlace(const std::pair<size_t, size_t> &pos)
+{
+    for(int i = -1; i <= 1; i++)
+        for(int j = -1; j <= 1; j++)
+            if (canGo(std::make_pair(pos.first + i, pos.second + j)))
+                return std::make_pair(pos.first + i, pos.second + j);
+    return NULL_POS;
 }

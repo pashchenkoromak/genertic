@@ -2,6 +2,7 @@
 
 int main()
 {
-    World test;
+   World test;
+   test.getNextMove();
    return 0;
 }

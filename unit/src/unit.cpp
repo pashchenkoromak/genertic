@@ -6,6 +6,11 @@ Unit::Unit()
     id = nextId++;
 }
 
+void Unit::mutation()
+{
+    m_genom.mutation();
+}
+
 Operation Unit::nextMove()
 {
    return m_genom.nextMove(m_energy);
@@ -14,6 +19,11 @@ Operation Unit::nextMove()
 void Unit::changeEnergy(const long long value)
 {
     m_energy += value;
+}
+
+void Unit::setAnswer(const answer &rhs)
+{
+    m_worldAnswer = rhs;
 }
 
 Unit &Unit::operator=(const Unit &rhs)
@@ -25,6 +35,13 @@ Unit &Unit::operator=(const Unit &rhs)
     return *this;
 }
 
+Unit Unit::NO_UNIT()
+{
+    static Unit NO_UNIT;
+    NO_UNIT.id = -1;
+    return NO_UNIT;
+}
+
 bool operator==(const class Unit& lhs, const class Unit& rhs)
 {
    return lhs.id == rhs.id;
@@ -34,4 +51,3 @@ bool operator!=(const class Unit& lhs, const class Unit& rhs)
    return !(lhs.id == rhs.id);
 }
 
-const class Unit Unit::NO_UNIT = Unit(-1);

@@ -1,5 +1,6 @@
 #include "operation.hpp"
 
+
 Operation::Operation(const operationType& _type) : type(_type) {}
 
 operationType Operation::parseOperationType(const std::vector<bool> &gen)
