@@ -1,25 +1,31 @@
 #include "genom.hpp"
 
-Genom::Genom() {
+Genom::Genom()
+{
   m_genom.resize(Genom::DEFAULT_SIZE);
-  for (size_t i = 0; i < Genom::DEFAULT_SIZE; i++) m_genom[i] = rand() % 2;
+  for (size_t i = 0; i < Genom::DEFAULT_SIZE; i++)
+    m_genom[i] = rand() % 2;
 }
 
-void Genom::mutation() {
+void
+Genom::mutation()
+{
   size_t index = rand() % (m_genom.size());
   m_genom[index] = 1 - index;
 }
 
-Operation Genom::nextMove(long long& energy) {
+Operation
+Genom::nextMove(long long& energy)
+{
   Operation doNow;
   while (!doNow.isWorldOperation() && energy > 0) {
     operationType type =
-        static_cast<operationType>(getNextOperation(m_nextMoveNum));
+      static_cast<operationType>(getNextOperation(m_nextMoveNum));
     m_nextMoveNum += CommandLength::OPERATION;
     doNow.type = type;
     switch (type) {
       case GOTO:
-        m_nextMoveNum += parseGoto();
+        m_nextMoveNum = parseGoto(m_nextMoveNum);
         break;
       case PHOTOSYNTESIS:
         doNow.type = operationType::PHOTOSYNTESIS;
@@ -43,25 +49,19 @@ Operation Genom::nextMove(long long& energy) {
     return operationType::DIE;
 }
 
-long long Genom::parseGoto() {
-  size_t length = 0;
-  for (size_t i = m_nextMoveNum + CommandLength::OPERATION;
-       i < m_nextMoveNum + CommandLength::OPERATION + CommandLength::GOTO;
-       i++) {
-    length = length * 2 + m_genom[i];
-  }
+long long
+Genom::parseGoto(const long long startPosition)
+{
   size_t where = 0;
-  for (size_t i =
-           m_nextMoveNum + CommandLength::OPERATION + CommandLength::GOTO;
-       i <
-       m_nextMoveNum + CommandLength::OPERATION + CommandLength::GOTO + length;
-       i++) {
+  for (size_t i = startPosition; i < startPosition + CommandLength::GOTO; i++) {
     where = where * 2 + m_genom[i];
   }
   return where;
 }
 
-Operation Genom::parseGo() {
+Operation
+Genom::parseGo()
+{
   size_t direction = 0;
   for (size_t i = m_nextMoveNum + CommandLength::OPERATION;
        i < m_nextMoveNum + CommandLength::OPERATION + CommandLength::DIRECTION;
@@ -73,18 +73,23 @@ Operation Genom::parseGo() {
   return doNow;
 }
 
-long long Genom::parseIf(long long& energy) {
-  bool condition = parseBoolExpression(m_nextMoveNum, energy, m_nextMoveNum);
+long long
+Genom::parseIf(long long& energy)
+{
+  size_t next = m_nextMoveNum;
+  bool condition = parseBoolExpression(next, energy, next);
   if (condition)
-    m_nextMoveNum = parseGoto();
+    next = parseGoto(next);
   else {
-    m_nextMoveNum += CommandLength::GOTO;
-    m_nextMoveNum = parseGoto();
+    next += CommandLength::GOTO;
+    next = parseGoto(next);
   }
+  return next;
 }
 
-size_t Genom::getNextOperation(const size_t startCommand,
-                               const size_t commandLength) {
+size_t
+Genom::getNextOperation(const size_t startCommand, const size_t commandLength)
+{
   auto command = startCommand % m_genom.size();
   auto first = m_genom.begin() + command;
   auto last = m_genom.begin() + command + commandLength;
@@ -92,16 +97,20 @@ size_t Genom::getNextOperation(const size_t startCommand,
   return Operation::parseOperationType(subVec);
 }
 
-int Genom::parseExpression(const size_t startCommand, long long& energy,
-                           size_t& next) {
+int
+Genom::parseExpression(const size_t startCommand,
+                       long long& energy,
+                       size_t& next)
+{
   next %= m_genom.size();
   energy--;
-  if (energy <= 0) return 0;
+  if (energy <= 0)
+    return 0;
   int lhs, rhs;
   int result = 0;
   next = startCommand + CommandLength::MATH;
   maths nextCommand =
-      static_cast<maths>(getNextOperation(startCommand, CommandLength::MATH));
+    static_cast<maths>(getNextOperation(startCommand, CommandLength::MATH));
   switch (nextCommand) {
     case NUMBER_CONST:
       result = getNextOperation(next, CommandLength::NUMBER);
@@ -136,7 +145,14 @@ int Genom::parseExpression(const size_t startCommand, long long& energy,
     case REST_DEVIDE:
       lhs = parseExpression(next, energy, next);
       rhs = parseExpression(next, energy, next);
-      result = lhs % rhs;
+      if (rhs == 0)
+        result = 0;
+      else
+        result = lhs % rhs;
+      break;
+    case ANSWER:
+      result = getNextOperation(next, CommandLength::ANSWER);
+      next += CommandLength::ANSWER;
       break;
     default:
       break;
@@ -144,16 +160,20 @@ int Genom::parseExpression(const size_t startCommand, long long& energy,
   return result;
 }
 
-bool Genom::parseBoolExpression(const size_t startCommand, long long& energy,
-                                size_t& next) {
+bool
+Genom::parseBoolExpression(const size_t startCommand,
+                           long long& energy,
+                           size_t& next)
+{
   energy--;
-  if (energy <= 0) return false;
+  if (energy <= 0)
+    return false;
   int lhs, rhs;
   bool b_lhs, b_rhs, value;
   bool result = false;
   next = startCommand + CommandLength::BOOL;
-  boolMath nextCommand = static_cast<boolMath>(
-      getNextOperation(startCommand, CommandLength::BOOL));
+  boolMath nextCommand =
+    static_cast<boolMath>(getNextOperation(startCommand, CommandLength::BOOL));
   switch (nextCommand) {
     case MORE:
       lhs = parseExpression(next, energy, next);
@@ -188,12 +208,12 @@ bool Genom::parseBoolExpression(const size_t startCommand, long long& energy,
     case AND:
       b_lhs = parseBoolExpression(next, energy, next);
       b_rhs = parseBoolExpression(next, energy, next);
-      result = (lhs && rhs);
+      result = (b_lhs && b_rhs);
       break;
     case OR:
       b_lhs = parseBoolExpression(next, energy, next);
       b_rhs = parseBoolExpression(next, energy, next);
-      result = (lhs || rhs);
+      result = (b_lhs || b_rhs);
       break;
     case NO:
       value = parseBoolExpression(next, energy, next);
@@ -202,14 +222,12 @@ bool Genom::parseBoolExpression(const size_t startCommand, long long& energy,
     case XOR:
       b_lhs = parseBoolExpression(next, energy, next);
       b_rhs = parseBoolExpression(next, energy, next);
-      result = (lhs ^ rhs);
+      result = (b_lhs ^ b_rhs);
       break;
-    case ANSWER:
-      result = getNextOperation(next, CommandLength::ANSWER);
-      next += CommandLength::ANSWER;
     case BOOL_CONST:
       result = getNextOperation(next, CommandLength::CONST_BOOL);
       next += CommandLength::CONST_BOOL;
+      break;
     default:
       result = false;
       break;
