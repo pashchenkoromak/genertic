@@ -34,6 +34,9 @@ enum directions
   DOWN_RIGHT
 };
 
+std::vector<char>
+intToChar(size_t value, const size_t length);
+
 std::string
 directionToString(const directions& rhs);
 
@@ -89,6 +92,8 @@ struct Operation
   /// @return type of operation
   static operationType parseOperationType(const std::vector<char>& gen);
   bool isWorldOperation();
+  friend bool operator==(const Operation& lhs, const Operation& rhs);
+  friend bool operator!=(const Operation& lhs, const Operation& rhs);
   operationType type;
   std::vector<std::string> params;
 };

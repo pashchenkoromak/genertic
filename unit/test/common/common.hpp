@@ -8,6 +8,7 @@ class testGenom : public Genom
 public:
   testGenom() = default;
   virtual ~testGenom() = default;
+
   void setGenom(const std::vector<char>& rhs) { m_genom = rhs; }
 
   long long testParseIf(long long& energy) { parseIf(energy); }
@@ -28,8 +29,6 @@ public:
 
 const long long START_ENERGY = 100;
 
-std::vector<char>
-intToChar(size_t value, const size_t length);
 void
 appendIntToChar(size_t value, std::vector<char>& vec, const size_t length);
 /// ParseExpression block

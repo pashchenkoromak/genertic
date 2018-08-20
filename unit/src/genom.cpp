@@ -1,60 +1,159 @@
 #include "genom.hpp"
-
+#include <iostream>
 Genom::Genom()
 {
-  m_genom.resize(Genom::DEFAULT_SIZE);
-  for (size_t i = 0; i < Genom::DEFAULT_SIZE; i++)
-    m_genom[i] = rand() % 2;
+  std::vector<char> append;
+  for (; m_genom.size() < Genom::DEFAULT_SIZE;) {
+    if (rand() % 50 == 0)
+      append = intToChar(operationType::MAKE_CHILD, CommandLength::OPERATION);
+    else
+      append =
+        intToChar(operationType::PHOTOSYNTESIS, CommandLength::OPERATION);
+    m_genom.insert(m_genom.end(), append.begin(), append.end());
+  }
 }
 
 void
 Genom::mutation()
 {
-  size_t index = rand() % (m_genom.size());
-  m_genom[index] = 1 - index;
+  size_t mutationType = rand() % 100;
+  std::vector<size_t> probabilities{ 30, 90, 100 };
+  if (mutationType < probabilities[0])
+    genomMutation();
+  else if (mutationType < probabilities[1])
+    genMutation();
+  else
+    chromosomeMutation();
 }
 
 Operation
 Genom::nextMove(long long& energy)
 {
+  if (rand() % 10000 == 0)
+    mutation();
   Operation doNow;
   while (!doNow.isWorldOperation() && energy > 0) {
     operationType type =
       static_cast<operationType>(getNextOperation(m_nextMoveNum));
-    m_nextMoveNum += CommandLength::OPERATION;
+    m_nextMoveNum = (m_nextMoveNum + CommandLength::OPERATION) % m_genom.size();
     doNow.type = type;
     switch (type) {
       case GOTO:
-        m_nextMoveNum = parseGoto(m_nextMoveNum);
+        m_nextMoveNum = parseGoto(m_nextMoveNum) % m_genom.size();
         break;
       case PHOTOSYNTESIS:
         doNow.type = operationType::PHOTOSYNTESIS;
         break;
       case WAIT:
+        doNow.type = operationType::WAIT;
         break;
       case GO:
-        parseGo();
+        doNow = parseGo();
+        break;
+      case SEE:
+        doNow = parseSee();
         break;
       case IF:
-        parseIf(energy);
+        m_nextMoveNum = parseIf(energy) % m_genom.size();
         break;
-      default:
-        doNow.type = operationType::PHOTOSYNTESIS;
+      case MAKE_CHILD:
+        doNow = parseMakeChild();
+        break;
     }
     energy--;
   }
-  if (energy)
+  if (energy >= 0)
     return doNow;
   else
     return operationType::DIE;
 }
 
+void
+Genom::genomMutation()
+{
+  const size_t countNewGenes = rand() % 5;
+  const size_t n = m_genom.size();
+  m_genom.resize(m_genom.size() + countNewGenes);
+  for (size_t i = n - 1; i < m_genom.size(); i++)
+    m_genom[i] = rand() % 2;
+}
+
+void
+Genom::genMutation()
+{
+  const size_t n = m_genom.size();
+  const size_t begin = rand() % n;
+  const size_t length = rand() % 10;
+  for (int i = 0; i < length; i++)
+    m_genom[(begin + i) % n] = rand() % 2;
+}
+
+void
+Genom::chromosomeMutation()
+{
+  const size_t mutationType = rand() % 3;
+  switch (mutationType) {
+    case 0:
+      doubleGen();
+      break;
+    case 1:
+      eraseGen();
+      break;
+    case 2:
+      reverseGen();
+      break;
+  }
+}
+
+void
+Genom::doubleGen()
+{
+  const size_t n = m_genom.size();
+  const size_t begin = rand() % n;
+  const size_t length = rand() % 10;
+
+  /* no subvector algo as it says here
+     https://stackoverflow.com/questions/421573/best-way-to-extract-a-subvector-from-a-vector
+     because of cycle nature of genom std::vector<char> adding(length);
+  */
+  std::vector<char> adding(length);
+  for (size_t i = 0; i < length; i++)
+    adding[i] = m_genom[(begin + i) % n];
+  auto it = m_genom.begin() + (begin + length) % n;
+  m_genom.insert(it, adding.begin(), adding.end());
+}
+
+void
+Genom::eraseGen()
+{
+  const size_t n = m_genom.size();
+  const size_t begin = rand() % n;
+  const size_t length = rand() % 10;
+  if (begin + length < n)
+    m_genom.erase(m_genom.begin() + begin, m_genom.begin() + begin + length);
+  else {
+    m_genom.erase(m_genom.begin() + begin, m_genom.end());
+    m_genom.erase(m_genom.begin(), m_genom.begin() + length - (n - begin));
+  }
+}
+
+void
+Genom::reverseGen()
+{
+  const size_t n = m_genom.size();
+  const size_t begin = rand() % n;
+  const size_t length = rand() % 10;
+  for (size_t i = 0; i < length; i++) {
+    std::swap(m_genom[(begin + i) % n], m_genom[(begin + length - i - 1) % n]);
+  }
+}
+
 long long
 Genom::parseGoto(const long long startPosition)
 {
-  size_t where = 0;
-  for (size_t i = startPosition; i < startPosition + CommandLength::GOTO; i++) {
-    where = where * 2 + m_genom[i];
+  size_t where = 0, n = m_genom.size();
+  for (size_t i = 0; i < CommandLength::GOTO; i++) {
+    where = where * 2 + m_genom[(startPosition + i) % n];
   }
   return where;
 }
@@ -62,14 +161,29 @@ Genom::parseGoto(const long long startPosition)
 Operation
 Genom::parseGo()
 {
-  size_t direction = 0;
-  for (size_t i = m_nextMoveNum + CommandLength::OPERATION;
-       i < m_nextMoveNum + CommandLength::OPERATION + CommandLength::DIRECTION;
-       i++) {
-    direction = direction * 2 + m_genom[i];
+  size_t direction = 0, n = m_genom.size();
+  for (size_t i = 0; i < CommandLength::DIRECTION; i++) {
+    direction = direction * 2 + m_genom[(m_nextMoveNum + i) % n];
   }
   Operation doNow;
+  doNow.type = operationType::GO;
   doNow.params.push_back(directionToString(static_cast<directions>(direction)));
+  return doNow;
+}
+
+Operation
+Genom::parseMakeChild()
+{
+  Operation doNow = parseGo();
+  doNow.type = operationType::MAKE_CHILD;
+  return doNow;
+}
+
+Operation
+Genom::parseSee()
+{
+  Operation doNow = parseGo();
+  doNow.type = operationType::SEE;
   return doNow;
 }
 

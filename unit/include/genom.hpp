@@ -14,10 +14,25 @@ public:
   Operation nextMove(long long& energy);
 
 protected:
+  /// @brief change count of genes
+  void genomMutation();
+  /// @brief small mutation of small count of genes
+  void genMutation();
+  /// @brief the biggest mutation
+  void chromosomeMutation();
+  /// @brief doubles some small part of genom
+  void doubleGen();
+  /// @brief erase some small part of genom
+  void eraseGen();
+  /// @brief reverse small part of genom
+  void reverseGen();
+
   /// @return next command position
   /// @note doesn't change m_nextCommand
   long long parseGoto(const long long startPosition);
   Operation parseGo();
+  Operation parseMakeChild();
+  Operation parseSee();
 
   /// @return next command position
   /// @note doesn't change m_nextCommand
