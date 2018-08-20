@@ -1,6 +1,9 @@
 #include <string>
 #include <vector>
 
+#ifndef OPERATION_HPP
+#define OPERATION_HPP
+
 namespace CommandLength {
 const size_t GOTO = 6;
 const size_t ANSWER = 1;
@@ -89,3 +92,5 @@ struct Operation
   operationType type;
   std::vector<std::string> params;
 };
+
+#endif // OPERATION_HPP

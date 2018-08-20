@@ -1,6 +1,8 @@
 #include "operation.hpp"
 #include <string>
 #include <vector>
+#ifndef GENOM_HPP
+#define GENOM_HPP
 
 class Genom
 {
@@ -33,3 +35,5 @@ protected:
   size_t m_nextMoveNum = 0;
   std::vector<char> m_genom;
 };
+
+#endif // GENOM_HPP
