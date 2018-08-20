@@ -33,6 +33,7 @@ protected:
   Operation parseGo();
   Operation parseMakeChild();
   Operation parseSee();
+  Operation parseAttack();
 
   /// @return next command position
   /// @note doesn't change m_nextCommand

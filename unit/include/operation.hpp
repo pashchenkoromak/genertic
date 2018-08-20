@@ -74,7 +74,7 @@ enum operationType
   PHOTOSYNTESIS,
   SEE,
   GO,
-  // WHILE,
+  ATTACK,
   WAIT,
   MAKE_CHILD,
   DIE,

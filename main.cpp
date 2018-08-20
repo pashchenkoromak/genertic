@@ -8,11 +8,11 @@ main()
   test.show();
   while (true) {
     for (int j = 0; j < 1000; j++) {
-      test.getNextMove();
-      getchar();
       system("clear");
       test.show();
       std::cout << j << std::endl;
+      test.getNextMove();
+      getchar();
     }
   }
   return 0;

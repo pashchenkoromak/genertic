@@ -8,7 +8,7 @@
 World::World()
 {
   int n = 30;
-  int m = 30;
+  int m = 40;
   m_vecUnits.resize(n);
   for (int i = 0; i < n; i++) {
     m_vecUnits[i].reserve(m);
@@ -55,6 +55,9 @@ World::handleOperation(const Operation& operation, unitInWorld& unit)
     case PHOTOSYNTESIS:
       photosintes(unit);
       break;
+    case ATTACK:
+      attack(unit, operation.params[0]);
+      break;
     default:
       wait(unit);
   }
@@ -67,6 +70,16 @@ World::go(unitInWorld& unit, const std::string& direction)
     std::swap(m_vecUnits[newPos.first][newPos.second],
               m_vecUnits[unit.pos.first][unit.pos.second]);
     unit.pos = newPos;
+  }
+}
+
+void
+World::attack(unitInWorld& unit, const std::string& direction)
+{
+  auto newPos = getNewPos(unit.pos, direction);
+  if (canAttack(newPos)) {
+    m_vecUnits[newPos.first][newPos.second].unit->changeEnergy(-BITE);
+    unit.unit->changeEnergy(BITE);
   }
 }
 
@@ -95,13 +108,15 @@ World::kill(unitInWorld& unit)
 void
 World::makeChild(unitInWorld& unit)
 {
-  unit.unit->changeEnergy(-ENERGY_FOR_CHILD);
   for (size_t i = 0; i < 9; i++) {
     auto newPos = findPlace(unit.pos);
     if (newPos == NULL_POS)
       return;
-    m_vecUnits[newPos.first][newPos.second] =
-      unitInWorld(std::make_shared<Unit>(*unit.unit), newPos);
+    long long energyPerChild = unit.unit->getEnergy() / 9;
+    unit.unit->changeEnergy(-energyPerChild);
+    m_vecUnits[newPos.first][newPos.second] = unitInWorld(
+      std::make_shared<Unit>(unit.unit->Child(*unit.unit, energyPerChild)),
+      newPos);
     if (rand() % 10000 < MUTATION_PROBABILITY * 10000)
       m_vecUnits[newPos.first][newPos.second].unit->mutation();
   }
@@ -113,6 +128,15 @@ World::canGo(const std::pair<size_t, size_t>& newPos)
       newPos.second >= m_vecUnits[0].size())
     return false;
   return (*m_vecUnits[newPos.first][newPos.second].unit == Unit::NO_UNIT());
+}
+
+bool
+World::canAttack(const std::pair<size_t, size_t>& newPos)
+{
+  if (newPos.first >= m_vecUnits.size() ||
+      newPos.second >= m_vecUnits[0].size())
+    return false;
+  return !(*m_vecUnits[newPos.first][newPos.second].unit == Unit::NO_UNIT());
 }
 
 void
@@ -180,6 +204,8 @@ void
 World::show() const
 {
   long long sumEnergy = 0;
+  long long averageAge = 0;
+  long long count = 0;
   for (auto row : m_vecUnits) {
     for (auto unit : row) {
       if (*unit.unit == Unit::NO_UNIT())
@@ -187,9 +213,12 @@ World::show() const
       else {
         std::cout << " x";
         sumEnergy += unit.unit->getEnergy();
+        averageAge += unit.unit->getAge();
+        count++;
       }
     }
     std::cout << std::endl;
   }
-  std::cout << sumEnergy << std::endl;
+  std::cout << "Summary energy for world: " << sumEnergy << std::endl;
+  std::cout << "Average age: " << (averageAge + .0) / count;
 }

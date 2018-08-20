@@ -24,7 +24,7 @@ public:
   void show() const;
 
 private:
-  const int ENERGY_FOR_CHILD = 10;
+  const size_t BITE = 40;
   const double MUTATION_PROBABILITY = 0.5;
   const std::pair<size_t, size_t> NULL_POS = std::make_pair(SIZE_MAX, SIZE_MAX);
   std::vector<std::vector<unitInWorld>> m_vecUnits;
@@ -35,10 +35,12 @@ private:
                                       const std::string& direction);
   std::pair<size_t, size_t> findPlace(const std::pair<size_t, size_t>& pos);
   void go(unitInWorld& unit, const std::string& direction);
+  void attack(unitInWorld& unit, const std::string& direction);
   void see(unitInWorld& unit, const std::string& direction);
   void wait(unitInWorld& unit);
   void clear(unitInWorld& unit);
   void kill(unitInWorld& unit);
   void makeChild(unitInWorld& unit);
   bool canGo(const std::pair<size_t, size_t>& newPos);
+  bool canAttack(const std::pair<size_t, size_t>& newPos);
 };

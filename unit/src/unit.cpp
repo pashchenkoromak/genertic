@@ -4,8 +4,24 @@ Unit::Unit(const long long energy)
   : m_energy(energy)
   , m_age(0)
 {
-  static int nextId = 0;
-  id = nextId++;
+  id = Unit::nextId++;
+}
+
+Unit::Unit(const Unit& rhs)
+  : m_age(rhs.m_age)
+  , id(rhs.id)
+  , m_energy(rhs.m_energy)
+  , m_genom(rhs.m_genom)
+{}
+
+Unit
+Unit::Child(const Unit& rhs, const long long energy)
+{
+  Unit child = rhs;
+  child.m_age = 0;
+  child.m_energy = energy;
+  child.id = Unit::nextId++;
+  return child;
 }
 
 void
@@ -38,6 +54,7 @@ Unit::operator=(const Unit& rhs)
 {
   m_energy = rhs.m_energy;
   m_genom = rhs.m_genom;
+  m_age = 0;
   m_worldAnswer = rhs.m_worldAnswer;
   id = rhs.id;
   return *this;
@@ -73,3 +90,5 @@ operator!=(const class Unit& lhs, const class Unit& rhs)
 {
   return !(lhs.id == rhs.id);
 }
+
+int Unit::nextId = 0;

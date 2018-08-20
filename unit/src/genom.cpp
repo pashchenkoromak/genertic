@@ -8,7 +8,7 @@ Genom::Genom()
       append = intToChar(operationType::MAKE_CHILD, CommandLength::OPERATION);
     else
       append =
-        intToChar(operationType::PHOTOSYNTESIS, CommandLength::OPERATION);
+        intToChar(rand() % operationType::TYPE_COUNT, CommandLength::OPERATION);
     m_genom.insert(m_genom.end(), append.begin(), append.end());
   }
 }
@@ -58,6 +58,9 @@ Genom::nextMove(long long& energy)
         break;
       case MAKE_CHILD:
         doNow = parseMakeChild();
+        break;
+      case ATTACK:
+        doNow = parseAttack();
         break;
     }
     energy--;
@@ -184,6 +187,14 @@ Genom::parseSee()
 {
   Operation doNow = parseGo();
   doNow.type = operationType::SEE;
+  return doNow;
+}
+
+Operation
+Genom::parseAttack()
+{
+  Operation doNow = parseGo();
+  doNow.type = operationType::ATTACK;
   return doNow;
 }
 
