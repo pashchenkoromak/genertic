@@ -16,7 +16,7 @@ World::World()
     m_earthEnergy[i].reserve(m);
     for (int j = 0; j < m; j++) {
       m_earthEnergy[i][j] = rand() % 1000;
-      if (rand() % 5 == 0)
+      if (rand() % 10000 <= FULLNESS * 10000)
         m_vecUnits[i].push_back(unitInWorld(
           std::make_shared<Unit>(rand() % 1000), std::make_pair(i, j)));
       else
@@ -62,7 +62,7 @@ World::handleOperation(const Operation& operation, unitInWorld& unit)
       makeChild(unit);
       break;
     case PHOTOSYNTESIS:
-      photosintes(unit);
+      photosynthesis(unit);
       break;
     case TILL:
       till(unit);
@@ -179,7 +179,7 @@ World::canAttack(const std::pair<size_t, size_t>& newPos)
 }
 
 void
-World::photosintes(unitInWorld& unit)
+World::photosynthesis(unitInWorld& unit)
 {
   unit.unit->changeEnergy(unit.pos.first / 10);
 }
