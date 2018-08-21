@@ -180,7 +180,6 @@ Genom::parseGo()
 Operation
 Genom::parseMakeChild()
 {
-  Operation doNow = parseGo();
   doNow.type = operationType::MAKE_CHILD;
   return doNow;
 }
