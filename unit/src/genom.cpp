@@ -224,6 +224,13 @@ Genom::getNextOperation(const size_t startCommand, const size_t commandLength)
   return Operation::parseOperationType(subVec);
 }
 
+/*
+ * Expression = <exp>
+ * <exp> = <maths operation> <exp> <exp>
+ * <exp> = <const>
+ *
+ *  So parsing is here
+ */
 int
 Genom::parseExpression(const size_t startCommand,
                        long long& energy,
@@ -287,6 +294,13 @@ Genom::parseExpression(const size_t startCommand,
   return result;
 }
 
+/*
+ * BoolExpression = <Bexp>
+ * <Bexp> = <bool operation> <Bexp> <Bexp>
+ * <Bexp> = <bool const>
+ *
+ *  So parsing is here
+ */
 bool
 Genom::parseBoolExpression(const size_t startCommand,
                            long long& energy,
