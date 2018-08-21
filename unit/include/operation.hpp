@@ -77,6 +77,7 @@ enum operationType
   ATTACK,
   WAIT,
   MAKE_CHILD,
+  TILL,
   /// NOTE: It must be the last one. Used as a way to count elements.
   TYPE_COUNT,
   DIE

@@ -11,7 +11,7 @@ main()
     j++;
     system("clear");
     test.show();
-    std::cout << std::endl << j << std::endl;
+    std::cout << j << std::endl;
     test.getNextMove();
     // getchar();
     system("sleep 0.1");

@@ -18,7 +18,8 @@ Operation::isWorldOperation()
 {
   return operationType::PHOTOSYNTESIS == type || operationType::SEE == type ||
          operationType::GO == type || operationType::WAIT == type ||
-         operationType::MAKE_CHILD == type || operationType::DIE == type;
+         operationType::MAKE_CHILD == type || operationType::DIE == type ||
+         operationType::TILL == type;
 }
 
 bool

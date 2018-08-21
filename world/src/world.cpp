@@ -7,15 +7,18 @@
 
 World::World()
 {
-  int n = 30;
-  int m = 40;
+  int n = 35;
+  int m = 65;
   m_vecUnits.resize(n);
+  m_earthEnergy.resize(n);
   for (int i = 0; i < n; i++) {
     m_vecUnits[i].reserve(m);
+    m_earthEnergy[i].reserve(m);
     for (int j = 0; j < m; j++) {
+      m_earthEnergy[i][j] = rand() % 1000;
       if (rand() % 5 == 0)
-        m_vecUnits[i].push_back(
-          unitInWorld(std::make_shared<Unit>(), std::make_pair(i, j)));
+        m_vecUnits[i].push_back(unitInWorld(
+          std::make_shared<Unit>(rand() % 1000), std::make_pair(i, j)));
       else
         m_vecUnits[i].push_back(unitInWorld(
           std::make_shared<Unit>(Unit::NO_UNIT()), std::make_pair(i, j)));
@@ -41,7 +44,7 @@ World::getNextMove()
 void
 World::handleOperation(const Operation& operation, unitInWorld& unit)
 {
-  unit.unit->changeEnergy(-unit.unit->getAge() / 100);
+  unit.unit->changeEnergy(-unit.unit->getAge() / 80);
   switch (operation.type) {
     case GO:
       go(unit, operation.params[0]);
@@ -60,6 +63,9 @@ World::handleOperation(const Operation& operation, unitInWorld& unit)
       break;
     case PHOTOSYNTESIS:
       photosintes(unit);
+      break;
+    case TILL:
+      till(unit);
       break;
     case ATTACK:
       attack(unit, operation.params[0]);
@@ -82,16 +88,18 @@ World::go(unitInWorld& unit, const std::string& direction)
 void
 World::attack(unitInWorld& unit, const std::string& direction)
 {
+  attacks++;
   auto newPos = getNewPos(unit.pos, direction);
   if (canAttack(newPos)) {
-    if (*m_vecUnits[newPos.first][newPos.second].unit == Unit::CORPSE()) {
-      unit.unit->changeEnergy(
-        m_vecUnits[newPos.first][newPos.second].unit->getEnergy());
-      clean(m_vecUnits[newPos.first][newPos.second]);
+    size_t x = newPos.first, y = newPos.second;
+    if (*m_vecUnits[x][y].unit == Unit::CORPSE()) {
+      unit.unit->changeEnergy(m_vecUnits[x][y].unit->getEnergy() * 2);
+      clean(m_vecUnits[x][y]);
     } else {
-      m_vecUnits[newPos.first][newPos.second].unit->changeEnergy(-BITE);
-      if (m_vecUnits[newPos.first][newPos.second].unit->getEnergy() <= 0)
-        clean(m_vecUnits[newPos.first][newPos.second]);
+      unit.unit->changeEnergy(BITE * 2);
+      m_vecUnits[x][y].unit->changeEnergy(-BITE);
+      if (m_vecUnits[x][y].unit->getEnergy() <= 0)
+        clean(m_vecUnits[x][y]);
     }
   }
 }
@@ -99,6 +107,7 @@ World::attack(unitInWorld& unit, const std::string& direction)
 void
 World::clean(unitInWorld& unit)
 {
+  m_earthEnergy[unit.pos.first][unit.pos.second] += unit.unit->getEnergy();
   *unit.unit = Unit::NO_UNIT();
 }
 
@@ -124,6 +133,15 @@ World::kill(unitInWorld& unit)
   long long energy = unit.unit->getEnergy();
   *unit.unit = Unit::CORPSE();
   unit.unit->changeEnergy(energy + CORPSE_ENERGY);
+}
+
+void
+World::till(unitInWorld& unit)
+{
+  tills++;
+  unit.unit->changeEnergy(m_earthEnergy[unit.pos.first][unit.pos.second] / 30);
+  m_earthEnergy[unit.pos.first][unit.pos.second] -=
+    (m_earthEnergy[unit.pos.first][unit.pos.second] / 30);
 }
 
 void
@@ -200,12 +218,24 @@ World::getNewPos(const std::pair<size_t, size_t>& pos,
 }
 
 std::pair<size_t, size_t>
+World::getNewPos(const std::pair<size_t, size_t>& pos,
+                 const std::pair<int, int>& direction)
+{
+  std::pair<size_t, size_t> newPos;
+  newPos.first =
+    (pos.first + direction.first + m_vecUnits.size()) % m_vecUnits.size();
+  newPos.second = (pos.second + direction.second + m_vecUnits[0].size()) %
+                  m_vecUnits[0].size();
+  return newPos;
+}
+
+std::pair<size_t, size_t>
 World::findPlace(const std::pair<size_t, size_t>& pos)
 {
   for (int i = -1; i <= 1; i++)
     for (int j = -1; j <= 1; j++)
-      if (canGo(std::make_pair(pos.first + i, pos.second + j)))
-        return std::make_pair(pos.first + i, pos.second + j);
+      if (canGo(getNewPos(pos, std::make_pair(i, j))))
+        return getNewPos(pos, std::make_pair(i, j));
   return NULL_POS;
 }
 
@@ -234,7 +264,7 @@ World::show() const
       else if (*unit.unit == Unit::CORPSE()) {
         std::cout << " x";
       } else {
-        std::cout << " U";
+        std::cout << " O";
         sumEnergy += unit.unit->getEnergy();
         averageAge += unit.unit->getAge();
         count++;
@@ -243,5 +273,6 @@ World::show() const
     std::cout << std::endl;
   }
   std::cout << "Summary energy for world: " << sumEnergy << std::endl;
-  std::cout << "Average age: " << (averageAge + .0) / count;
+  std::cout << "Average age: " << (averageAge + .0) / count << std::endl;
+  std::cout << "Tills: " << tills << "\tAttacks: " << attacks << std::endl;
 }

@@ -44,6 +44,9 @@ Genom::nextMove(long long& energy)
       case PHOTOSYNTESIS:
         doNow.type = operationType::PHOTOSYNTESIS;
         break;
+      case TILL:
+        doNow.type = operationType::TILL;
+        break;
       case WAIT:
         doNow.type = operationType::WAIT;
         break;

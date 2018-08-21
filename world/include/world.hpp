@@ -24,16 +24,21 @@ public:
   void show() const;
 
 private:
+  size_t attacks = 0;
+  size_t tills = 0;
   const size_t BITE = 40;
   const double MUTATION_PROBABILITY = 0.5;
   const long long CORPSE_ENERGY = 100;
   const std::pair<size_t, size_t> NULL_POS = std::make_pair(SIZE_MAX, SIZE_MAX);
+  std::vector<std::vector<long long>> m_earthEnergy;
   std::vector<std::vector<unitInWorld>> m_vecUnits;
   std::vector<std::string> split(const std::string& data);
   void handleOperation(const Operation& operation, unitInWorld& unit);
   void photosintes(unitInWorld& unit);
   std::pair<size_t, size_t> getNewPos(const std::pair<size_t, size_t>& pos,
                                       const std::string& direction);
+  std::pair<size_t, size_t> getNewPos(const std::pair<size_t, size_t>& pos,
+                                      const std::pair<int, int>& direction);
   std::pair<size_t, size_t> findPlace(const std::pair<size_t, size_t>& pos);
   void go(unitInWorld& unit, const std::string& direction);
   void attack(unitInWorld& unit, const std::string& direction);
@@ -42,6 +47,7 @@ private:
   void wait(unitInWorld& unit);
   void clear(unitInWorld& unit);
   void kill(unitInWorld& unit);
+  void till(unitInWorld& unit);
   void makeChild(unitInWorld& unit);
   bool canGo(const std::pair<size_t, size_t>& newPos);
   bool canAttack(const std::pair<size_t, size_t>& newPos);
