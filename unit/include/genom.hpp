@@ -82,7 +82,7 @@ protected:
     const size_t startCommand,
     const size_t commandLength = CommandLength::OPERATION);
 
-  /// @brief Parses expression. See more info about it in operation.hpp file.
+  /// @brief Parses expression.
   /// @param[in] startCommand - here parser will start his work.
   /// @param[in, out] energy - needs for thinking. After finish - will be
   /// decreased due to algo.
