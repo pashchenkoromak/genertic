@@ -68,6 +68,14 @@ Unit::NO_UNIT()
   return NO_UNIT;
 }
 
+Unit
+Unit::CORPSE()
+{
+  static Unit CORPSE;
+  CORPSE.id = -2;
+  return CORPSE;
+}
+
 long long
 Unit::getEnergy() const
 {

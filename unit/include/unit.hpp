@@ -19,6 +19,7 @@ public:
   friend bool operator==(const Unit& lhs, const Unit& rhs);
   friend bool operator!=(const Unit& lhs, const Unit& rhs);
   static Unit NO_UNIT();
+  static Unit CORPSE();
   long long getEnergy() const;
   long long getAge() const;
   Unit Child(const Unit& rhs, const long long energy);

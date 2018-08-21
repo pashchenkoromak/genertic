@@ -28,8 +28,14 @@ World::getNextMove()
 {
   for (auto row : m_vecUnits)
     for (auto unit : row)
-      if (*unit.unit != Unit::NO_UNIT())
+      if (*unit.unit != Unit::NO_UNIT() && *unit.unit != Unit::CORPSE())
         handleOperation(unit.unit->nextMove(), unit);
+      else {
+        if (*unit.unit == Unit::CORPSE())
+          unit.unit->changeEnergy(-CORPSE_ENERGY * 2 / 3);
+        if (unit.unit->getEnergy() <= 0)
+          clean(unit);
+      }
 }
 
 void
@@ -78,9 +84,22 @@ World::attack(unitInWorld& unit, const std::string& direction)
 {
   auto newPos = getNewPos(unit.pos, direction);
   if (canAttack(newPos)) {
-    m_vecUnits[newPos.first][newPos.second].unit->changeEnergy(-BITE);
-    unit.unit->changeEnergy(BITE);
+    if (*m_vecUnits[newPos.first][newPos.second].unit == Unit::CORPSE()) {
+      unit.unit->changeEnergy(
+        m_vecUnits[newPos.first][newPos.second].unit->getEnergy());
+      clean(m_vecUnits[newPos.first][newPos.second]);
+    } else {
+      m_vecUnits[newPos.first][newPos.second].unit->changeEnergy(-BITE);
+      if (m_vecUnits[newPos.first][newPos.second].unit->getEnergy() <= 0)
+        clean(m_vecUnits[newPos.first][newPos.second]);
+    }
   }
+}
+
+void
+World::clean(unitInWorld& unit)
+{
+  *unit.unit = Unit::NO_UNIT();
 }
 
 void
@@ -102,7 +121,9 @@ World::wait(unitInWorld& unit)
 void
 World::kill(unitInWorld& unit)
 {
-  *unit.unit = Unit::NO_UNIT();
+  long long energy = unit.unit->getEnergy();
+  *unit.unit = Unit::CORPSE();
+  unit.unit->changeEnergy(energy + CORPSE_ENERGY);
 }
 
 void
@@ -210,8 +231,10 @@ World::show() const
     for (auto unit : row) {
       if (*unit.unit == Unit::NO_UNIT())
         std::cout << " .";
-      else {
+      else if (*unit.unit == Unit::CORPSE()) {
         std::cout << " x";
+      } else {
+        std::cout << " U";
         sumEnergy += unit.unit->getEnergy();
         averageAge += unit.unit->getAge();
         count++;

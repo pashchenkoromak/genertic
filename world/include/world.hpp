@@ -26,6 +26,7 @@ public:
 private:
   const size_t BITE = 40;
   const double MUTATION_PROBABILITY = 0.5;
+  const long long CORPSE_ENERGY = 100;
   const std::pair<size_t, size_t> NULL_POS = std::make_pair(SIZE_MAX, SIZE_MAX);
   std::vector<std::vector<unitInWorld>> m_vecUnits;
   std::vector<std::string> split(const std::string& data);
@@ -36,6 +37,7 @@ private:
   std::pair<size_t, size_t> findPlace(const std::pair<size_t, size_t>& pos);
   void go(unitInWorld& unit, const std::string& direction);
   void attack(unitInWorld& unit, const std::string& direction);
+  void clean(unitInWorld& unit);
   void see(unitInWorld& unit, const std::string& direction);
   void wait(unitInWorld& unit);
   void clear(unitInWorld& unit);

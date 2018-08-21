@@ -6,14 +6,15 @@ main()
 {
   World test;
   test.show();
+  int j = 0;
   while (true) {
-    for (int j = 0; j < 1000; j++) {
-      system("clear");
-      test.show();
-      std::cout << j << std::endl;
-      test.getNextMove();
-      getchar();
-    }
+    j++;
+    system("clear");
+    test.show();
+    std::cout << std::endl << j << std::endl;
+    test.getNextMove();
+    // getchar();
+    system("sleep 0.1");
   }
   return 0;
 }

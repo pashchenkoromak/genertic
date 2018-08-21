@@ -77,9 +77,9 @@ enum operationType
   ATTACK,
   WAIT,
   MAKE_CHILD,
-  DIE,
   /// NOTE: It must be the last one. Used as a way to count elements.
-  TYPE_COUNT
+  TYPE_COUNT,
+  DIE
 };
 
 struct Operation
