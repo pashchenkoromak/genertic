@@ -33,6 +33,9 @@ const size_t MATH = 3;
 
 /// @brief true or false
 const size_t CONST_BOOL = 1;
+
+/// @brief count of children: 0..8
+const size_t CHILD_COUNT = 3;
 } // namespace CommandLength
 
 /// @enum answer
@@ -60,9 +63,6 @@ enum directions
   UP_RIGHT,
   DOWN_RIGHT
 };
-
-std::string
-directionToString(const directions& rhs);
 
 /// @brief converts int value to a char vector of bits with given length
 /// @param[in] value - integer value > 0
@@ -152,8 +152,8 @@ enum operationType
   ATTACK,
   /// @brief Do nothing
   WAIT,
-  /// @brief Command to create a child to the world. For now it's R-strategy, so
-  /// dont need additional info
+  /// @brief Command to create a child to the world.
+  /// @note it needs count of children as a parameter (number: 1..8)
   MAKE_CHILD,
   /// @brief try to get energy from the earth under unit
   TILL,
@@ -181,7 +181,7 @@ struct Operation
   /// @brief Get operation type, which is coded into vector
   /// @param[in] gen - sequence of bits
   /// @return type of operation
-  static operationType parseOperationType(const std::vector<char>& gen);
+  static size_t parseOperationType(const std::vector<char>& gen);
   /// @brief Check, if it's a command to the world or no.
   bool isWorldOperation();
   /// @brief operators == and !=
@@ -194,7 +194,7 @@ struct Operation
   operationType type;
 
   /// @brief vector of parameters
-  std::vector<std::string> params;
+  std::vector<size_t> params;
 };
 
 #endif // OPERATION_HPP

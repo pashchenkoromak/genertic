@@ -1,3 +1,4 @@
+#include "IUnit.hpp"
 #include "unit.hpp"
 #include <memory>
 #include <vector>
@@ -10,14 +11,14 @@ struct unitInWorld
   unitInWorld() = default;
 
   /// @brief constructor with data
-  unitInWorld(std::shared_ptr<Unit> _unit,
+  unitInWorld(std::shared_ptr<IUnit> _unit,
               const std::pair<size_t, size_t>& _pos)
     : unit(_unit)
     , pos(_pos)
   {}
 
   /// @brief unit
-  std::shared_ptr<Unit> unit;
+  std::shared_ptr<IUnit> unit;
 
   /// @brief position
   std::pair<size_t, size_t> pos;
@@ -46,6 +47,8 @@ public:
   void show() const;
 
 private:
+  std::shared_ptr<IUnit> sun;
+
   /// @brief some statistic info about unit moves
   /// @{
   size_t attacks = 0;
@@ -53,7 +56,7 @@ private:
   /// @}
 
   /// @brief Energy, that you can take when bite anyone.
-  const size_t BITE = 40;
+  const size_t BITE = 10;
 
   /// @brief Probability for children to mutate
   const double MUTATION_PROBABILITY = 0.5;
@@ -68,7 +71,7 @@ private:
   const std::pair<size_t, size_t> NULL_POS = std::make_pair(SIZE_MAX, SIZE_MAX);
 
   /// @brief Earth energy matrix. Used for tilling.
-  std::vector<std::vector<long long>> m_earthEnergy;
+  std::vector<std::vector<std::shared_ptr<IUnit>>> m_earthEnergy;
 
   /// @brief Units matrix
   std::vector<std::vector<unitInWorld>> m_vecUnits;
@@ -81,7 +84,7 @@ private:
   /// @param[in] direction - shift direction as string (LEFT, RIGHT, etc).
   /// @return New position.
   std::pair<size_t, size_t> getNewPos(const std::pair<size_t, size_t>& pos,
-                                      const std::string& direction);
+                                      const directions& direction);
   /// @brief Get new position, which is pos + direction
   /// @param[in] pos - current position
   /// @param[in] direction - shift direction as pair<int, int>
@@ -98,13 +101,13 @@ private:
   /// @brief move unit to the direction
   /// @param[in] unit - doer
   /// @param[in] direction - where to move
-  void go(unitInWorld& unit, const std::string& direction);
+  void go(unitInWorld& unit, const directions direction);
 
   /// @brief attack in direction
   /// @param[in] unit - doer
   /// @param[in] direction - where to attack
   /// @note if there is nothing - nothing will happened
-  void attack(unitInWorld& unit, const std::string& direction);
+  void attack(unitInWorld& unit, const directions direction);
 
   /// @brief clean a corpse to the earth.
   /// @param[in] unit - unit to clean
@@ -114,7 +117,7 @@ private:
   /// @param[in] unit - doer
   /// @param[in] direction - where to move
   /// @result unit will have an answer by the world
-  void see(unitInWorld& unit, const std::string& direction);
+  void see(unitInWorld& unit, const directions direction);
 
   /// @brief unit doesnt want to do anything
   /// @param[in] unit - some lazy unit
@@ -130,7 +133,7 @@ private:
 
   /// @brief creates children where it's possible around the unit
   /// @param[in] unit - parent
-  void makeChild(unitInWorld& unit);
+  void makeChild(unitInWorld& unit, const size_t count);
 
   /// @brief check, if there is no units, and it's possible to go there
   /// @param[in] newPos - position for check

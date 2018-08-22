@@ -21,10 +21,10 @@ public:
   virtual void mutation();
 
   /// @brief makes next move, due to genom.
-  /// @param[out] energy - need energy for every iteration of thinking.
+  /// @param[in] energy - current energy.
   /// On finish energy will be decreased due to algorithm coded in genom.
   /// @return Operation struct with command to the World.
-  virtual Operation nextMove(long long& energy);
+  virtual Operation nextMove(long long energy);
 
 protected:
   /// @brief change count of genes

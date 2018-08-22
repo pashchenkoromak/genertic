@@ -27,12 +27,12 @@ Genom::mutation()
 }
 
 Operation
-Genom::nextMove(long long& energy)
+Genom::nextMove(long long energy)
 {
   if (rand() % 10000 == 0)
     mutation();
   Operation doNow;
-  while (!doNow.isWorldOperation() && energy > 0) {
+  do {
     operationType type =
       static_cast<operationType>(getNextOperation(m_nextMoveNum));
     m_nextMoveNum = (m_nextMoveNum + CommandLength::OPERATION) % m_genom.size();
@@ -67,7 +67,7 @@ Genom::nextMove(long long& energy)
         break;
     }
     energy--;
-  }
+  } while (!doNow.isWorldOperation() && energy > 0);
   if (energy >= 0)
     return doNow;
   else
@@ -167,13 +167,10 @@ Genom::parseGoto(const long long startPosition)
 Operation
 Genom::parseGo()
 {
-  size_t direction = 0, n = m_genom.size();
-  for (size_t i = 0; i < CommandLength::DIRECTION; i++) {
-    direction = direction * 2 + m_genom[(m_nextMoveNum + i) % n];
-  }
+  size_t direction = getNextOperation(m_nextMoveNum, CommandLength::DIRECTION);
   Operation doNow;
   doNow.type = operationType::GO;
-  doNow.params.push_back(directionToString(static_cast<directions>(direction)));
+  doNow.params.push_back(direction);
   return doNow;
 }
 
@@ -181,7 +178,10 @@ Operation
 Genom::parseMakeChild()
 {
   Operation doNow;
+  size_t child_count = 8;
+  // getNextOperation(m_nextMoveNum, CommandLength::CHILD_COUNT);
   doNow.type = operationType::MAKE_CHILD;
+  doNow.params.push_back(child_count);
   return doNow;
 }
 
