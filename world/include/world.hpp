@@ -34,6 +34,9 @@ public:
   /// @note It also fill earthEnergy.
   World();
 
+  /// @brief create a world with some concrete size
+  World(const std::pair<size_t, size_t>& worldSize);
+
   /// @brief Default destructor
   ~World() = default;
 
@@ -58,17 +61,17 @@ private:
   /// @}
 
   /// @brief Energy, that you can take when bite anyone.
-  const size_t BITE = 10;
+  const size_t BITE = 30;
 
   /// @brief Each iteration, every unit must pay a penalty to sun:
   /// unit age * AGE_PENALTY.
-  const double AGE_PENALTY = 0.2;
+  const double AGE_PENALTY = 0.01;
 
   /// @brief Probability for children to mutate
   const double MUTATION_PROBABILITY = 0.5;
 
   /// @brief Fullness of world in the start.
-  const double FULLNESS = 0.3333;
+  const double FULLNESS = 0.1;
 
   /// @brief Default energy of any corpse.
   const long long CORPSE_ENERGY = 10;

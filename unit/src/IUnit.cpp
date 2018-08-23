@@ -57,7 +57,7 @@ IUnit::nextOperation()
   Operation op = this->nextMove();
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  addEnergy(-elapsed.count() / 25);
+  addEnergy(-elapsed.count() / 50);
   if (m_energy <= 0)
     op.type = operationType::DIE;
   return op;

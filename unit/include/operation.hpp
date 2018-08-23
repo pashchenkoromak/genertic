@@ -178,10 +178,6 @@ struct Operation
   /// @param[in] type - type of new Operation
   Operation(const operationType& type);
 
-  /// @brief Get operation type, which is coded into vector
-  /// @param[in] gen - sequence of bits
-  /// @return type of operation
-  static size_t parseOperationType(const std::vector<char>& gen);
   /// @brief Check, if it's a command to the world or no.
   bool isWorldOperation();
   /// @brief operators == and !=

@@ -6,22 +6,24 @@
 #include <string>
 
 World::World()
+  : World(std::make_pair(30, 40))
+{}
+
+World::World(const std::pair<size_t, size_t>& worldSize)
   : sun(std::make_shared<IUnit>(INT32_MAX))
 {
-  int n = 20;
-  int m = 30;
-  m_vecUnits.resize(n);
-  m_earthEnergy.resize(n);
-  for (int i = 0; i < n; i++) {
-    m_vecUnits[i].reserve(m);
-    m_earthEnergy[i].reserve(m);
-    for (int j = 0; j < m; j++) {
-      m_earthEnergy[i][j] = std::make_shared<IUnit>(rand() % 1000);
+  m_vecUnits.resize(worldSize.first);
+  m_earthEnergy.resize(worldSize.first);
+  for (int i = 0; i < worldSize.first; i++) {
+    m_vecUnits[i].reserve(worldSize.second);
+    m_earthEnergy[i].reserve(worldSize.second);
+    for (int j = 0; j < worldSize.second; j++) {
+      m_earthEnergy[i].emplace_back(std::make_shared<IUnit>(rand() % 1000));
       if (rand() % 10000 <= FULLNESS * 10000)
-        m_vecUnits[i].push_back(unitInWorld(
-          std::make_shared<Unit>(rand() % 1000), std::make_pair(i, j)));
+        m_vecUnits[i].emplace_back(unitInWorld(
+          std::make_shared<Unit>(rand() % 50), std::make_pair(i, j)));
       else
-        m_vecUnits[i].push_back(
+        m_vecUnits[i].emplace_back(
           unitInWorld(IUnit::NO_UNIT(), std::make_pair(i, j)));
     }
   }
@@ -158,7 +160,7 @@ World::makeChild(unitInWorld& unit, const size_t count)
       return;
     long long energyPerChild = unit.unit->getEnergy() / (count + 1);
     m_vecUnits[newPos.first][newPos.second] =
-      unitInWorld(unit.unit->Child(energyPerChild + rand() % 50 - 25), newPos);
+      unitInWorld(unit.unit->Child(energyPerChild), newPos);
     if (rand() % 10000 < MUTATION_PROBABILITY * 10000)
       m_vecUnits[newPos.first][newPos.second].unit->mutation();
   }
@@ -290,7 +292,7 @@ World::show() const
   }
   std::cout << "Summary energy for world: " << sumEnergy << std::endl;
   std::cout << "Average age: " << (averageAge + .0) / count << std::endl;
-  std::cout << "Tills: " << tills << "\tAttacks: " << attacks << std::endl;
+  // std::cout << "Tills: " << tills << "\tAttacks: " << attacks << std::endl;
   std::cout << "Average children count: "
             << (childrenCount + .0) / (bornCount + 0.000001) << std::endl;
 }

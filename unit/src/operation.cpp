@@ -4,15 +4,6 @@ Operation::Operation(const operationType& _type)
   : type(_type)
 {}
 
-size_t
-Operation::parseOperationType(const std::vector<char>& gen)
-{
-  size_t index = 0;
-  for (auto bit : gen)
-    index = (index * 2) + bit;
-  return index;
-}
-
 bool
 Operation::isWorldOperation()
 {
@@ -43,5 +34,5 @@ intToChar(size_t value, const size_t length)
     gen[i] = value % 2;
     value /= 2;
   }
-  return gen;
+  return std::move(gen);
 }

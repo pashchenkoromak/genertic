@@ -1,15 +1,37 @@
 #include "genom.hpp"
 #include <iostream>
+
+void
+insertIntToGenom(std::vector<char>& genom,
+                 const size_t pos,
+                 int value,
+                 const size_t length)
+{
+  if (genom.size() < pos + length)
+    genom.resize(pos + length);
+  for (int i = length - 1; i >= 0; i--) {
+    genom[pos + i] = value % 2;
+    value /= 2;
+  }
+}
+
 Genom::Genom()
 {
-  std::vector<char> append;
-  for (; m_genom.size() < Genom::DEFAULT_SIZE;) {
-    if (rand() % 50 == 0)
-      append = intToChar(operationType::MAKE_CHILD, CommandLength::OPERATION);
-    else
-      append =
-        intToChar(rand() % operationType::TYPE_COUNT, CommandLength::OPERATION);
-    m_genom.insert(m_genom.end(), append.begin(), append.end());
+  size_t pos = 0;
+  m_genom.resize(Genom::DEFAULT_SIZE + 10);
+  for (; pos < Genom::DEFAULT_SIZE;) {
+    if (rand() % 50 == 0) {
+      insertIntToGenom(
+        m_genom, pos, operationType::MAKE_CHILD, CommandLength::OPERATION);
+      pos += CommandLength::OPERATION;
+    } else {
+
+      insertIntToGenom(m_genom,
+                       pos,
+                       rand() % operationType::TYPE_COUNT,
+                       CommandLength::OPERATION);
+      pos += CommandLength::OPERATION;
+    }
   }
 }
 
@@ -157,11 +179,7 @@ Genom::reverseGen()
 long long
 Genom::parseGoto(const long long startPosition)
 {
-  size_t where = 0, n = m_genom.size();
-  for (size_t i = 0; i < CommandLength::GOTO; i++) {
-    where = where * 2 + m_genom[(startPosition + i) % n];
-  }
-  return where;
+  return getNextOperation(startPosition, CommandLength::GOTO);
 }
 
 Operation
@@ -219,11 +237,11 @@ size_t
 Genom::getNextOperation(const size_t startCommand, const size_t commandLength)
 {
   size_t n = m_genom.size();
-  std::vector<char> nextOperation(commandLength);
+  size_t operationIndex = 0;
   for (size_t i = 0; i < commandLength; i++)
-    nextOperation[i] = m_genom[(startCommand + i) % n];
+    operationIndex = operationIndex * 2 + m_genom[(startCommand + i) % n];
 
-  return Operation::parseOperationType(nextOperation);
+  return operationIndex;
 }
 
 /*
