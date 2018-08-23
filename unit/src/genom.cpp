@@ -178,8 +178,8 @@ Operation
 Genom::parseMakeChild()
 {
   Operation doNow;
-  size_t child_count = 8;
-  // getNextOperation(m_nextMoveNum, CommandLength::CHILD_COUNT);
+  size_t child_count =
+    getNextOperation(m_nextMoveNum, CommandLength::CHILD_COUNT);
   doNow.type = operationType::MAKE_CHILD;
   doNow.params.push_back(child_count);
   return doNow;
@@ -218,11 +218,12 @@ Genom::parseIf(long long& energy)
 size_t
 Genom::getNextOperation(const size_t startCommand, const size_t commandLength)
 {
-  auto command = startCommand % m_genom.size();
-  auto first = m_genom.begin() + command;
-  auto last = m_genom.begin() + command + commandLength;
-  std::vector<char> subVec(first, last);
-  return Operation::parseOperationType(subVec);
+  size_t n = m_genom.size();
+  std::vector<char> nextOperation(commandLength);
+  for (size_t i = 0; i < commandLength; i++)
+    nextOperation[i] = m_genom[(startCommand + i) % n];
+
+  return Operation::parseOperationType(nextOperation);
 }
 
 /*

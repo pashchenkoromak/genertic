@@ -30,6 +30,7 @@ World::World()
 void
 World::getNextMove()
 {
+  childrenCount = bornCount = 0;
   for (auto row : m_vecUnits)
     for (auto unit : row)
       if (!unit.unit->isNo_Unit() && !unit.unit->isCorpse())
@@ -46,8 +47,7 @@ World::getNextMove()
 void
 World::handleOperation(const Operation& operation, unitInWorld& unit)
 {
-  sun->changeEnergy(unit.unit, unit.unit->getAge() / 50);
-
+  sun->changeEnergy(unit.unit, unit.unit->getAge() * AGE_PENALTY);
   switch (operation.type) {
     case GO:
       go(unit, static_cast<directions>(operation.params[0]));
@@ -144,12 +144,14 @@ World::till(unitInWorld& unit)
   tills++;
   unit.unit->changeEnergy(
     m_earthEnergy[unit.pos.first][unit.pos.second],
-    m_earthEnergy[unit.pos.first][unit.pos.second]->getEnergy() / 30);
+    m_earthEnergy[unit.pos.first][unit.pos.second]->getEnergy() / 100);
 }
 
 void
 World::makeChild(unitInWorld& unit, const size_t count)
 {
+  childrenCount += count;
+  bornCount++;
   for (size_t i = 0; i < count; i++) {
     auto newPos = findPlace(unit.pos);
     if (newPos == NULL_POS)
@@ -289,4 +291,6 @@ World::show() const
   std::cout << "Summary energy for world: " << sumEnergy << std::endl;
   std::cout << "Average age: " << (averageAge + .0) / count << std::endl;
   std::cout << "Tills: " << tills << "\tAttacks: " << attacks << std::endl;
+  std::cout << "Average children count: "
+            << (childrenCount + .0) / (bornCount + 0.000001) << std::endl;
 }

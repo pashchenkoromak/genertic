@@ -57,7 +57,7 @@ IUnit::nextOperation()
   Operation op = this->nextMove();
   auto end = std::chrono::system_clock::now();
   auto elapsed = end - start;
-  addEnergy(-elapsed.count() / 50);
+  addEnergy(-elapsed.count() / 25);
   if (m_energy <= 0)
     op.type = operationType::DIE;
   return op;
@@ -111,7 +111,7 @@ IUnit::Child(const long long energy)
   std::shared_ptr<IUnit> child = this->makeChild();
   child->m_age = 0;
   child->addEnergy(std::min(energy, m_energy));
-  addEnergy(std::min(energy, m_energy));
+  addEnergy(-std::min(energy, m_energy));
   child->id = IUnit::nextId++;
   return child;
 }

@@ -9,7 +9,7 @@
 namespace CommandLength {
 
 /// @brief After every GOTO command there are number of the next command
-const size_t GOTO = 6;
+const size_t GOTO = 16;
 
 /// @brief Length of server's answer
 const size_t ANSWER = 1;

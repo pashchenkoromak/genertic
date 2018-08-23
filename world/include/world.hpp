@@ -53,10 +53,16 @@ private:
   /// @{
   size_t attacks = 0;
   size_t tills = 0;
+  size_t childrenCount;
+  size_t bornCount;
   /// @}
 
   /// @brief Energy, that you can take when bite anyone.
   const size_t BITE = 10;
+
+  /// @brief Each iteration, every unit must pay a penalty to sun:
+  /// unit age * AGE_PENALTY.
+  const double AGE_PENALTY = 0.2;
 
   /// @brief Probability for children to mutate
   const double MUTATION_PROBABILITY = 0.5;
@@ -65,7 +71,7 @@ private:
   const double FULLNESS = 0.3333;
 
   /// @brief Default energy of any corpse.
-  const long long CORPSE_ENERGY = 100;
+  const long long CORPSE_ENERGY = 10;
 
   /// @brief Some position, that means "HERE IS NO POSITION!".
   const std::pair<size_t, size_t> NULL_POS = std::make_pair(SIZE_MAX, SIZE_MAX);
