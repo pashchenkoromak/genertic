@@ -68,6 +68,10 @@ protected:
   /// @return Operation ATTACK with direction param.
   Operation parseAttack();
 
+  /// @brief parses SEND_MESSAGE command. Needs message.
+  /// @return Operation SEND_MESSAGE with message param.
+  Operation parseSendMessage();
+
   /// @brief Parse IF command. See more info in operation.hpp file.
   /// @return next command position
   /// @note doesn't change m_nextCommand

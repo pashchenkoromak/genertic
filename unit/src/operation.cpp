@@ -10,7 +10,8 @@ Operation::isWorldOperation()
   return operationType::PHOTOSYNTESIS == type || operationType::SEE == type ||
          operationType::GO == type || operationType::WAIT == type ||
          operationType::MAKE_CHILD == type || operationType::DIE == type ||
-         operationType::TILL == type || operationType::ATTACK == type;
+         operationType::TILL == type || operationType::ATTACK == type ||
+         operationType::SEND_MESSAGE == type;
 }
 
 bool

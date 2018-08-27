@@ -87,6 +87,9 @@ Genom::nextMove(long long energy)
       case ATTACK:
         doNow = parseAttack();
         break;
+      case SEND_MESSAGE:
+        doNow = parseSendMessage();
+        break;
     }
     energy--;
   } while (!doNow.isWorldOperation() && energy > 0);
@@ -142,7 +145,7 @@ Genom::doubleGen()
 
   /* no subvector algo as it says here
      https://stackoverflow.com/questions/421573/best-way-to-extract-a-subvector-from-a-vector
-     because of cycle nature of genom std::vector<char> adding(length);
+     because of cycle nature of genom std::vector<bool> adding(length);
   */
   std::vector<char> adding(length);
   for (size_t i = 0; i < length; i++)
@@ -216,6 +219,16 @@ Genom::parseAttack()
 {
   Operation doNow = parseGo();
   doNow.type = operationType::ATTACK;
+  return doNow;
+}
+
+Operation
+Genom::parseSendMessage()
+{
+  Operation doNow;
+  doNow.type = operationType::SEND_MESSAGE;
+  doNow.params.push_back(
+    getNextOperation(m_nextMoveNum, CommandLength::MESSAGE));
   return doNow;
 }
 
@@ -305,9 +318,10 @@ Genom::parseExpression(const size_t startCommand,
         result = lhs % rhs;
       break;
     case ANSWER:
-      result = getNextOperation(next, CommandLength::ANSWER);
-      next += CommandLength::ANSWER;
+      result = getAnswer();
       break;
+    case MESSAGE:
+      result = getMessage();
     default:
       break;
   }

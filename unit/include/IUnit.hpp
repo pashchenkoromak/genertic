@@ -43,10 +43,16 @@ public:
   virtual void onChangeEnergy();
 
   /// @brief set answer by the world to the unit
-  /// @param[in] rhs - answer be the world.
+  /// @param[in] rhs - answer by the world.
   void setAnswer(const answer& rhs);
   /// @brief If need any changes on set answer action
   virtual void onSetAnswer();
+
+  /// @brief set message to the unit
+  /// @param[in] rhs - message.
+  void setMessage(const size_t& rhs);
+  /// @brief If need any changes on set message action
+  virtual void onSetMessage();
 
   /// @brief Energy getter
   /// @return current energy of unit
@@ -82,6 +88,12 @@ protected:
   /// @brief starting energy for every unit by default
   static const long long START_ENERGY = 400;
 
+  /// @brief getter for answer
+  answer getAnswer() const;
+
+  /// @brief getter for message
+  size_t getMessage() const;
+
 private:
   /// @brief Add energy
   void addEnergy(const long long energy);
@@ -102,6 +114,8 @@ private:
 
   /// @brief last answer by world
   answer m_worldAnswer;
+
+  size_t m_message;
 };
 
 #endif // IUNIT_HPP

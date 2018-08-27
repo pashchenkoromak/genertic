@@ -164,6 +164,18 @@ IUnit::clean()
   id = NO_UNIT_ID;
 }
 
+answer
+IUnit::getAnswer() const
+{
+  return m_worldAnswer;
+}
+
+size_t
+IUnit::getMessage() const
+{
+  return m_message;
+}
+
 void
 IUnit::addEnergy(const long long energy)
 {

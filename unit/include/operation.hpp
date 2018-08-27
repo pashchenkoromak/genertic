@@ -34,6 +34,9 @@ const size_t MATH = 3;
 /// @brief true or false
 const size_t CONST_BOOL = 1;
 
+/// @brief size of sended message
+const size_t MESSAGE = 6;
+
 /// @brief count of children: 0..8
 const size_t CHILD_COUNT = 3;
 } // namespace CommandLength
@@ -157,6 +160,9 @@ enum operationType
   MAKE_CHILD,
   /// @brief try to get energy from the earth under unit
   TILL,
+
+  /// @brief way to communicate with other units
+  SEND_MESSAGE,
 
   /// @note: It must be the last one. Used as a way to count elements.
   TYPE_COUNT,
