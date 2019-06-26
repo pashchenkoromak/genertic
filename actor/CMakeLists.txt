@@ -8,4 +8,8 @@ set(SOURCES src/operation.cpp src/actor.cpp src/genom.cpp)
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC include/)
 
+if(${COVERAGE_ENABLE})
+    enable_coverage(${PROJECT_NAME})
+endif()
+
 add_subdirectory(test)

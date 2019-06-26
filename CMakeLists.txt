@@ -8,6 +8,8 @@ conan_basic_setup()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+include(_cmake/coverage.cmake)
+
 add_executable(${PROJECT_NAME} "main.cpp")
 
 add_subdirectory(world)
