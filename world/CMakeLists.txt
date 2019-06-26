@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(worldLib)
+project(world_lib)
 
-add_library(worldLib include/world.hpp src/world.cpp)
+add_library(${PROJECT_NAME} include/world.hpp src/world.cpp)
 
-target_link_libraries(worldLib PUBLIC unitLib)
+target_link_libraries(${PROJECT_NAME} PUBLIC actor_lib)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include/)

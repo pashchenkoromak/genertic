@@ -1,4 +1,4 @@
-#include "unit.hpp"
+#include "actor.hpp"
 
 #ifndef COMMON_HPP
 #define COMMON_HPP
