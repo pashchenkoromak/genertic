@@ -103,6 +103,7 @@ protected:
     size_t m_nextMoveNum = 0;
 
     /// @brief Sequence of 0/1 chars - genom. Any sequence is valid genom.
+    /// @note Didn't use bitset because genom may grows
     std::vector<char> m_genom;
 };
 

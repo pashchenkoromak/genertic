@@ -1,73 +1,63 @@
+#include "actor.hpp"
 #include "common/common.hpp"
 #include "gtest/gtest.h"
 
-void testIf(const std::vector<char>& gen, const long long finalEnergy, const bool correctResult)
+TEST(ActorTest, default_energy_constructor)
 {
-    testGenom tgen;
+    Actor a1;
+    EXPECT_EQ(a1.getEnergy(), Actor::START_ENERGY);
+}
+TEST(ActorTest, custom_energy_constructor)
+{
+    const int energy = 1;
+    Actor a2(energy);
+    EXPECT_EQ(a2.getEnergy(), energy);
+}
+TEST(ActorTest, copy_constructor)
+{
+    int energy = 10;
+    Actor a1(energy);
+    EXPECT_NO_THROW(Actor(a1));
+    Actor a2(a1);
+    EXPECT_EQ(a2.getEnergy(), a1.getEnergy());
+    EXPECT_EQ(a2.getEnergy(), energy);
+    EXPECT_EQ(a2, a1);
+}
+TEST(ActorTest, move_constructor)
+{
+    Actor a1;
+    EXPECT_NO_THROW(Actor(std::move(a1)));
+    int energy = 10;
+    Actor a2(energy);
+    Actor a3(std::move(a2));
+    EXPECT_EQ(a3.getEnergy(), energy);
+    EXPECT_NE(a3.getEnergy(), a2.getEnergy());
 
-    long long energy = START_ENERGY;
-    tgen.setGenom(gen);
-    bool result = tgen.testParseIf(energy);
-    ASSERT_EQ(result, correctResult);
-    ASSERT_EQ(energy, finalEnergy);
+    Actor a4 = std::move(a3);
+    EXPECT_EQ(a4.getEnergy(), energy);
+}
+TEST(ActorTest, child)
+{
+    int energy = 10;
+    Actor a1(energy);
+    Actor a5 = Actor::Child(a1, energy);
+    EXPECT_NE(a5, a1);
+    EXPECT_EQ(0, a5.getAge());
 }
 
-/// IF block
-// test simple if
-TEST(ParseIFExpression, JustBoolConsts)
+TEST(ActorTest, MetaActors)
 {
-    std::vector<char> gen;
-    appender(gen, boolMath::MORE,
-             CommandLength::BOOL, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             5,
-             CommandLength::NUMBER, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             3,
-             CommandLength::NUMBER, // 4
-             20,
-             CommandLength::GOTO, // 6
-             10,
-             CommandLength::GOTO); // 6
-    testIf(gen, START_ENERGY - 3, 20);
-
-    gen.clear();
-    appender(gen, boolMath::LESS,
-             CommandLength::BOOL, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             5,
-             CommandLength::NUMBER, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             3,
-             CommandLength::NUMBER, // 4
-             20,
-             CommandLength::GOTO, // 6
-             10, CommandLength::GOTO);
-
-    testIf(gen, START_ENERGY - 3, 10);
+    EXPECT_NO_THROW(Actor::NO_UNIT());
+    EXPECT_NO_THROW(Actor::CORPSE());
 }
 
-void testNextTurn(const std::vector<char>& gen, const long long finalEnergy, const Operation& correctResult)
+TEST(ActorTest, Moves)
 {
-    testGenom tgen;
-
-    long long energy = START_ENERGY;
-    tgen.setGenom(gen);
-    Operation result = tgen.nextMove(energy);
-    ASSERT_EQ(result, correctResult);
-    ASSERT_EQ(energy, finalEnergy);
-}
-
-// test if with expression
-TEST(ParseEndless, Must_Die)
-{
-    std::vector<char> gen;
-    appender(gen, operationType::GOTO, CommandLength::OPERATION, 0, CommandLength::NUMBER);
-    Operation die;
-    die.type = operationType::DIE;
-    testNextTurn(gen, 0, die);
+    int energy(100);
+    Actor a(energy);
+    EXPECT_NO_THROW(a.setAnswer(answer::Empty));
+    EXPECT_NO_THROW(a.changeEnergy(-1));
+    EXPECT_EQ(a.getEnergy(), energy - 1);
+    EXPECT_NO_THROW(a.mutation());
+    EXPECT_NO_THROW(a.nextMove());
 }

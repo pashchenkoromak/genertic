@@ -10,6 +10,9 @@
 class Actor
 {
 public:
+    /// @brief starting energy for every actor by default
+    static const long long START_ENERGY = 400;
+
     /// @brief construct actor with some energy.
     /// @param[in] energy - start energy.
     /// @note Every actor has unique id.
@@ -18,13 +21,7 @@ public:
     /// @brief Copy actor.
     /// @param[in] rhs - base actor.
     /// @note Be care: you'll have 2 actors with equals id
-    Actor(const Actor& rhs);
-
-    /// @brief Create new actor. He is the same as base actor, but has unique id and
-    /// different energy
-    /// @param[in] rhs - base actor.
-    /// @param[in] energy - start energy for constructed actor.
-    Actor(const Actor& rhs, const long long energy);
+    Actor(const Actor& rhs) = default;
 
     /// @brief mutation of genom
     /// @result some changes in genom
@@ -46,7 +43,7 @@ public:
     /// @brief operator =
     /// @param[in] rhs - base actor
     /// @result - the same actor with the same id.
-    Actor& operator=(const Actor& rhs);
+    Actor& operator=(const Actor& rhs) = default;
 
     /// @brief operators == and !=
     /// @note it checking equality only using id.
@@ -68,18 +65,14 @@ public:
     /// @return current actor age
     long long getAge() const;
 
-    /// @brief makes new actor. It`s the same as base actor, but with other energy
-    /// and id.
+    /// @brief makes new actor. It`s the same as base actor, but with other energy, id and 0 age.
     /// @param[in] rhs - base actor
     /// @param[in] - start energy
-    Actor Child(const Actor& rhs, const long long energy);
+    static Actor Child(const Actor& rhs, const long long energy);
 
 private:
     /// @brief next free id
     static int nextId;
-
-    /// @brief starting energy for every actor by default
-    static const long long START_ENERGY = 400;
 
     /// @brief current actor id
     int id;

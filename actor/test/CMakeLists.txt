@@ -5,7 +5,7 @@ project(actor_tests)
 add_library(common_lib common/common.hpp common/common.cpp)
 target_link_libraries(common_lib actor_lib)
 
-set(TEST_SOURCES actor_test.cpp expression_test.cpp bool_test.cpp)
+set(TEST_SOURCES actor_test.cpp expression_test.cpp bool_test.cpp if_test.cpp)
 
 add_executable(${PROJECT_NAME} ${TEST_SOURCES})
 

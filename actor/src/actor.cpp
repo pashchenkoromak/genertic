@@ -2,8 +2,6 @@
 
 Actor::Actor(const long long energy) : m_energy(energy), m_age(0) { id = Actor::nextId++; }
 
-Actor::Actor(const Actor& rhs) : m_age(rhs.m_age), id(rhs.id), m_energy(rhs.m_energy), m_genom(rhs.m_genom) {}
-
 Actor Actor::Child(const Actor& rhs, const long long energy)
 {
     Actor child = rhs;
@@ -24,16 +22,6 @@ Operation Actor::nextMove()
 void Actor::changeEnergy(const long long value) { m_energy += value; }
 
 void Actor::setAnswer(const answer& rhs) { m_worldAnswer = rhs; }
-
-Actor& Actor::operator=(const Actor& rhs)
-{
-    m_energy = rhs.m_energy;
-    m_genom = rhs.m_genom;
-    m_age = 0;
-    m_worldAnswer = rhs.m_worldAnswer;
-    id = rhs.id;
-    return *this;
-}
 
 Actor Actor::NO_UNIT()
 {
