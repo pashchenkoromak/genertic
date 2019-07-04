@@ -5,7 +5,9 @@ Operation::Operation(const operationType& _type) : type(_type) {}
 operationType Operation::parseOperationType(const std::vector<char>& gen)
 {
     size_t index = 0;
-    for (auto bit : gen) index = (index * 2) + bit;
+    for (auto bit : gen) {
+        index = (index * 2) + bit;
+    }
     return static_cast<operationType>(index);
 }
 

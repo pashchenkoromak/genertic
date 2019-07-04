@@ -26,7 +26,9 @@ void Genom::mutation()
 
 Operation Genom::nextMove(long long& energy, bool canMutate /* = true */)
 {
-    if (canMutate && rand() % 10000 == 0) mutation();
+    if (canMutate && rand() % 10000 == 0) {
+        mutation();
+    }
     Operation doNow;
     while (energy >= 0 && !doNow.isWorldOperation()) {
         operationType type = static_cast<operationType>(getNextOperation(m_nextMoveNum));
@@ -76,7 +78,9 @@ void Genom::genomMutation()
     const size_t countNewGenes = rand() % 5;
     const size_t n = m_genom.size();
     m_genom.resize(m_genom.size() + countNewGenes);
-    for (size_t i = n - 1; i < m_genom.size(); i++) m_genom[i] = rand() % 2;
+    for (size_t i = n - 1; i < m_genom.size(); i++) {
+        m_genom[i] = rand() % 2;
+    }
 }
 
 void Genom::genMutation()
@@ -84,7 +88,9 @@ void Genom::genMutation()
     const size_t n = m_genom.size();
     const size_t begin = rand() % n;
     const size_t length = rand() % 10;
-    for (int i = 0; i < length; i++) m_genom[(begin + i) % n] = rand() % 2;
+    for (int i = 0; i < length; i++) {
+        m_genom[(begin + i) % n] = rand() % 2;
+    }
 }
 
 void Genom::chromosomeMutation()
@@ -114,7 +120,9 @@ void Genom::doubleGen()
        because of cycle nature of genom std::vector<char> adding(length);
     */
     std::vector<char> adding(length);
-    for (size_t i = 0; i < length; i++) adding[i] = m_genom[(begin + i) % n];
+    for (size_t i = 0; i < length; i++) {
+        adding[i] = m_genom[(begin + i) % n];
+    }
     auto it = m_genom.begin() + (begin + length) % n;
     m_genom.insert(it, adding.begin(), adding.end());
 }
@@ -217,7 +225,9 @@ int Genom::parseExpression(const size_t startCommand, long long& energy, size_t&
 {
     next %= m_genom.size();
     energy--;
-    if (energy <= 0) return 0;
+    if (energy <= 0) {
+        return 0;
+    }
     int lhs, rhs;
     int result = 0;
     next = startCommand + CommandLength::MATH;
@@ -281,7 +291,9 @@ int Genom::parseExpression(const size_t startCommand, long long& energy, size_t&
 bool Genom::parseBoolExpression(const size_t startCommand, long long& energy, size_t& next)
 {
     energy--;
-    if (energy <= 0) return false;
+    if (energy <= 0) {
+        return false;
+    }
     int lhs, rhs;
     bool b_lhs, b_rhs, value;
     bool result = false;

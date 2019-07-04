@@ -16,24 +16,31 @@ World::World()
         m_earthEnergy[i].reserve(m);
         for (int j = 0; j < m; j++) {
             m_earthEnergy[i][j] = rand() % 1000;
-            if (rand() % 10000 <= FULLNESS * 10000)
+            if (rand() % 10000 <= FULLNESS * 10000) {
                 m_vecActors[i].push_back(actorInWorld(std::make_shared<Actor>(rand() % 1000), std::make_pair(i, j)));
-            else
+            } else {
                 m_vecActors[i].push_back(actorInWorld(std::make_shared<Actor>(Actor::NO_UNIT()), std::make_pair(i, j)));
+            }
         }
     }
 }
 
 void World::getNextMove()
 {
-    for (auto row : m_vecActors)
-        for (auto actor : row)
-            if (*actor != Actor::NO_UNIT() && *actor != Actor::CORPSE())
+    for (auto row : m_vecActors) {
+        for (auto actor : row) {
+            if (*actor != Actor::NO_UNIT() && *actor != Actor::CORPSE()) {
                 handleOperation(actor->nextMove(), actor);
-            else {
-                if (*actor == Actor::CORPSE()) actor->changeEnergy(-CORPSE_ENERGY * 2 / 3);
-                if (actor->getEnergy() <= 0) clean(actor);
+            } else {
+                if (*actor == Actor::CORPSE()) {
+                    actor->changeEnergy(-CORPSE_ENERGY * 2 / 3);
+                }
+                if (actor->getEnergy() <= 0) {
+                    clean(actor);
+                }
             }
+        }
+    }
 }
 
 void World::handleOperation(const Operation& operation, actorInWorld& actor)
@@ -89,7 +96,9 @@ void World::attack(actorInWorld& actor, const std::string& direction)
         } else {
             actor->changeEnergy(BITE * 2);
             m_vecActors[x][y].actor->changeEnergy(-BITE);
-            if (m_vecActors[x][y].actor->getEnergy() <= 0) clean(m_vecActors[x][y]);
+            if (m_vecActors[x][y].actor->getEnergy() <= 0) {
+                clean(m_vecActors[x][y]);
+            }
         }
     }
 }
@@ -129,23 +138,31 @@ void World::makeChild(actorInWorld& actor)
 {
     for (size_t i = 0; i < 9; i++) {
         auto newPos = findPlace(actor.pos);
-        if (newPos == NULL_POS) return;
+        if (newPos == NULL_POS) {
+            return;
+        }
         long long energyPerChild = actor->getEnergy() / 9;
         actor->changeEnergy(-energyPerChild);
         m_vecActors[newPos.first][newPos.second] =
             actorInWorld(std::make_shared<Actor>(Actor::Child(*actor, energyPerChild)), newPos);
-        if (rand() % 10000 < MUTATION_PROBABILITY * 10000) m_vecActors[newPos.first][newPos.second].actor->mutation();
+        if (rand() % 10000 < MUTATION_PROBABILITY * 10000) {
+            m_vecActors[newPos.first][newPos.second].actor->mutation();
+        }
     }
 }
 bool World::canGo(const std::pair<size_t, size_t>& newPos)
 {
-    if (newPos.first >= m_vecActors.size() || newPos.second >= m_vecActors[0].size()) return false;
+    if (newPos.first >= m_vecActors.size() || newPos.second >= m_vecActors[0].size()) {
+        return false;
+    }
     return (*m_vecActors[newPos.first][newPos.second].actor == Actor::NO_UNIT());
 }
 
 bool World::canAttack(const std::pair<size_t, size_t>& newPos)
 {
-    if (newPos.first >= m_vecActors.size() || newPos.second >= m_vecActors[0].size()) return false;
+    if (newPos.first >= m_vecActors.size() || newPos.second >= m_vecActors[0].size()) {
+        return false;
+    }
     return !(*m_vecActors[newPos.first][newPos.second].actor == Actor::NO_UNIT());
 }
 
@@ -154,10 +171,18 @@ void World::photosynthesis(actorInWorld& actor) { actor->changeEnergy(actor.pos.
 std::pair<size_t, size_t> World::getNewPos(const std::pair<size_t, size_t>& pos, const std::string& direction)
 {
     std::pair<size_t, size_t> newPos = pos;
-    if (direction == directionToString(directions::LEFT)) newPos.second--;
-    if (direction == directionToString(directions::RIGHT)) newPos.second++;
-    if (direction == directionToString(directions::UP)) newPos.first--;
-    if (direction == directionToString(directions::DOWN)) newPos.first++;
+    if (direction == directionToString(directions::LEFT)) {
+        newPos.second--;
+    }
+    if (direction == directionToString(directions::RIGHT)) {
+        newPos.second++;
+    }
+    if (direction == directionToString(directions::UP)) {
+        newPos.first--;
+    }
+    if (direction == directionToString(directions::DOWN)) {
+        newPos.first++;
+    }
     if (direction == directionToString(directions::UP_LEFT)) {
         newPos.first--;
         newPos.second--;
@@ -188,19 +213,26 @@ std::pair<size_t, size_t> World::getNewPos(const std::pair<size_t, size_t>& pos,
 
 std::pair<size_t, size_t> World::findPlace(const std::pair<size_t, size_t>& pos)
 {
-    for (int i = -1; i <= 1; i++)
-        for (int j = -1; j <= 1; j++)
-            if (canGo(getNewPos(pos, std::make_pair(i, j)))) return getNewPos(pos, std::make_pair(i, j));
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            if (canGo(getNewPos(pos, std::make_pair(i, j)))) {
+                return getNewPos(pos, std::make_pair(i, j));
+            }
+        }
+    }
     return NULL_POS;
 }
 
 size_t World::getNumberOfAlives()
 {
     size_t result = 0;
-    for (auto row : m_vecActors)
+    for (auto row : m_vecActors) {
         for (auto actor : row) {
-            if (*actor != Actor::NO_UNIT()) result++;
+            if (*actor != Actor::NO_UNIT()) {
+                result++;
+            }
         }
+    }
     return result;
 }
 
@@ -211,9 +243,9 @@ void World::show() const
     long long count = 0;
     for (auto row : m_vecActors) {
         for (auto actor : row) {
-            if (*actor == Actor::NO_UNIT())
+            if (*actor == Actor::NO_UNIT()) {
                 std::cout << " .";
-            else if (*actor == Actor::CORPSE()) {
+            } else if (*actor == Actor::CORPSE()) {
                 std::cout << " x";
             } else {
                 std::cout << " O";
