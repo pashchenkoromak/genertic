@@ -37,7 +37,7 @@ const size_t CONST_BOOL = 1;
 
 /// @enum answer
 /// @brief list of possible answers by world
-enum answer
+enum class answer : uint8_t
 {
     /// @brief Nothing
     Empty,
@@ -49,7 +49,7 @@ enum answer
 /// @enum directions
 /// @brief includes 8 directions
 /// @note No need to explane their meaning
-enum directions
+enum class directions : uint8_t
 {
     LEFT,
     RIGHT,
@@ -72,7 +72,7 @@ std::vector<char> intToChar(size_t value, const size_t length);
 /// @enum maths
 /// @brief math commands
 /// @note In math expressions used prefix notation: + 3 4, for example.
-enum maths
+enum class maths : uint8_t
 {
     /// @brief +
     PLUS,
@@ -94,7 +94,7 @@ enum maths
 
 /// @enum boolMath
 /// @brief bool commands
-enum boolMath
+enum class boolMath : uint8_t
 {
     /// @brief boolean constant
     BOOL_CONST,
@@ -122,7 +122,7 @@ enum boolMath
 
 /// @enum operationType
 /// @brief enum of possible main operations
-enum operationType
+enum class operationType : uint8_t
 {
     /// @brief GOTO uses number after itself, set next command position to this
     /// number

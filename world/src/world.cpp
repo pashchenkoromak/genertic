@@ -28,40 +28,40 @@ void World::getNextMove()
 {
     for (auto row : m_vecActors)
         for (auto actor : row)
-            if (*actor.actor != Actor::NO_UNIT() && *actor.actor != Actor::CORPSE())
-                handleOperation(actor.actor->nextMove(), actor);
+            if (*actor != Actor::NO_UNIT() && *actor != Actor::CORPSE())
+                handleOperation(actor->nextMove(), actor);
             else {
-                if (*actor.actor == Actor::CORPSE()) actor.actor->changeEnergy(-CORPSE_ENERGY * 2 / 3);
-                if (actor.actor->getEnergy() <= 0) clean(actor);
+                if (*actor == Actor::CORPSE()) actor->changeEnergy(-CORPSE_ENERGY * 2 / 3);
+                if (actor->getEnergy() <= 0) clean(actor);
             }
 }
 
 void World::handleOperation(const Operation& operation, actorInWorld& actor)
 {
-    actor.actor->changeEnergy(-actor.actor->getAge() / 80);
+    actor->changeEnergy(-actor->getAge() / 80);
     switch (operation.type) {
-        case GO:
+        case operationType::GO:
             go(actor, operation.params[0]);
             break;
-        case SEE:
+        case operationType::SEE:
             see(actor, operation.params[0]);
             break;
-        case WAIT:
+        case operationType::WAIT:
             wait(actor);
             break;
-        case DIE:
+        case operationType::DIE:
             kill(actor);
             break;
-        case MAKE_CHILD:
+        case operationType::MAKE_CHILD:
             makeChild(actor);
             break;
-        case PHOTOSYNTESIS:
+        case operationType::PHOTOSYNTESIS:
             photosynthesis(actor);
             break;
-        case TILL:
+        case operationType::TILL:
             till(actor);
             break;
-        case ATTACK:
+        case operationType::ATTACK:
             attack(actor, operation.params[0]);
             break;
         default:
@@ -84,10 +84,10 @@ void World::attack(actorInWorld& actor, const std::string& direction)
     if (canAttack(newPos)) {
         size_t x = newPos.first, y = newPos.second;
         if (*m_vecActors[x][y].actor == Actor::CORPSE()) {
-            actor.actor->changeEnergy(m_vecActors[x][y].actor->getEnergy() * 2);
+            actor->changeEnergy(m_vecActors[x][y].actor->getEnergy() * 2);
             clean(m_vecActors[x][y]);
         } else {
-            actor.actor->changeEnergy(BITE * 2);
+            actor->changeEnergy(BITE * 2);
             m_vecActors[x][y].actor->changeEnergy(-BITE);
             if (m_vecActors[x][y].actor->getEnergy() <= 0) clean(m_vecActors[x][y]);
         }
@@ -96,32 +96,32 @@ void World::attack(actorInWorld& actor, const std::string& direction)
 
 void World::clean(actorInWorld& actor)
 {
-    m_earthEnergy[actor.pos.first][actor.pos.second] += actor.actor->getEnergy();
-    *actor.actor = Actor::NO_UNIT();
+    m_earthEnergy[actor.pos.first][actor.pos.second] += actor->getEnergy();
+    *actor = Actor::NO_UNIT();
 }
 
 void World::see(actorInWorld& actor, const std::string& direction)
 {
     auto newPos = getNewPos(actor.pos, direction);
-    if (*(actor.actor) == Actor::NO_UNIT())
-        actor.actor->setAnswer(answer::Empty);
+    if (*(actor) == Actor::NO_UNIT())
+        actor->setAnswer(answer::Empty);
     else
-        actor.actor->setAnswer(answer::ActorIsHere);
+        actor->setAnswer(answer::ActorIsHere);
 }
 
-void World::wait(actorInWorld& actor) { actor.actor->changeEnergy(-1); }
+void World::wait(actorInWorld& actor) { actor->changeEnergy(-1); }
 
 void World::kill(actorInWorld& actor)
 {
-    long long energy = actor.actor->getEnergy();
-    *actor.actor = Actor::CORPSE();
-    actor.actor->changeEnergy(energy + CORPSE_ENERGY);
+    long long energy = actor->getEnergy();
+    *actor = Actor::CORPSE();
+    actor->changeEnergy(energy + CORPSE_ENERGY);
 }
 
 void World::till(actorInWorld& actor)
 {
     tills++;
-    actor.actor->changeEnergy(m_earthEnergy[actor.pos.first][actor.pos.second] / 30);
+    actor->changeEnergy(m_earthEnergy[actor.pos.first][actor.pos.second] / 30);
     m_earthEnergy[actor.pos.first][actor.pos.second] -= (m_earthEnergy[actor.pos.first][actor.pos.second] / 30);
 }
 
@@ -130,10 +130,10 @@ void World::makeChild(actorInWorld& actor)
     for (size_t i = 0; i < 9; i++) {
         auto newPos = findPlace(actor.pos);
         if (newPos == NULL_POS) return;
-        long long energyPerChild = actor.actor->getEnergy() / 9;
-        actor.actor->changeEnergy(-energyPerChild);
+        long long energyPerChild = actor->getEnergy() / 9;
+        actor->changeEnergy(-energyPerChild);
         m_vecActors[newPos.first][newPos.second] =
-            actorInWorld(std::make_shared<Actor>(actor.actor->Child(*actor.actor, energyPerChild)), newPos);
+            actorInWorld(std::make_shared<Actor>(Actor::Child(*actor, energyPerChild)), newPos);
         if (rand() % 10000 < MUTATION_PROBABILITY * 10000) m_vecActors[newPos.first][newPos.second].actor->mutation();
     }
 }
@@ -149,7 +149,7 @@ bool World::canAttack(const std::pair<size_t, size_t>& newPos)
     return !(*m_vecActors[newPos.first][newPos.second].actor == Actor::NO_UNIT());
 }
 
-void World::photosynthesis(actorInWorld& actor) { actor.actor->changeEnergy(actor.pos.first / 10); }
+void World::photosynthesis(actorInWorld& actor) { actor->changeEnergy(actor.pos.first / 10); }
 
 std::pair<size_t, size_t> World::getNewPos(const std::pair<size_t, size_t>& pos, const std::string& direction)
 {
@@ -199,7 +199,7 @@ size_t World::getNumberOfAlives()
     size_t result = 0;
     for (auto row : m_vecActors)
         for (auto actor : row) {
-            if (*actor.actor != Actor::NO_UNIT()) result++;
+            if (*actor != Actor::NO_UNIT()) result++;
         }
     return result;
 }
@@ -211,14 +211,14 @@ void World::show() const
     long long count = 0;
     for (auto row : m_vecActors) {
         for (auto actor : row) {
-            if (*actor.actor == Actor::NO_UNIT())
+            if (*actor == Actor::NO_UNIT())
                 std::cout << " .";
-            else if (*actor.actor == Actor::CORPSE()) {
+            else if (*actor == Actor::CORPSE()) {
                 std::cout << " x";
             } else {
                 std::cout << " O";
-                sumEnergy += actor.actor->getEnergy();
-                averageAge += actor.actor->getAge();
+                sumEnergy += actor->getEnergy();
+                averageAge += actor->getAge();
                 count++;
             }
         }

@@ -74,3 +74,4 @@ Thumbs.db
 CMakeLists.txt.user
 *.autosave
 bin/
+.vscode

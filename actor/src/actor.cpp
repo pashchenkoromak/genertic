@@ -2,6 +2,16 @@
 
 Actor::Actor(const long long energy) : m_energy(energy), m_age(0) { id = Actor::nextId++; }
 
+Actor::Actor(Actor&& rhs)
+    : m_age(std::move(rhs.m_age)),
+      m_energy(std::move(rhs.m_energy)),
+      m_genom(std::move(rhs.m_genom)),
+      m_worldAnswer(std::move(rhs.m_worldAnswer))
+{
+    rhs.m_energy = 0;
+    rhs.m_age = 0;
+}
+
 Actor Actor::Child(const Actor& rhs, const long long energy)
 {
     Actor child = rhs;

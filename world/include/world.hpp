@@ -12,6 +12,10 @@ struct actorInWorld
     /// @brief constructor with data
     actorInWorld(std::shared_ptr<Actor> _actor, const std::pair<size_t, size_t>& _pos) : actor(_actor), pos(_pos) {}
 
+    /// @brief used for ugly actor.actor usage.
+    Actor operator*() const { return *actor; }
+    std::shared_ptr<Actor> operator->() const { return actor; }
+
     /// @brief actor
     std::shared_ptr<Actor> actor;
 

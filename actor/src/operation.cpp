@@ -24,28 +24,28 @@ std::string directionToString(const directions& rhs)
 {
     std::string direction;
     switch (rhs) {
-        case LEFT:
+        case directions::LEFT:
             direction = "LEFT";
             break;
-        case RIGHT:
+        case directions::RIGHT:
             direction = "RIGHT";
             break;
-        case UP:
+        case directions::UP:
             direction = "UP";
             break;
-        case DOWN:
+        case directions::DOWN:
             direction = "DOWN";
             break;
-        case UP_LEFT:
+        case directions::UP_LEFT:
             direction = "UP_LEFT";
             break;
-        case UP_RIGHT:
+        case directions::UP_RIGHT:
             direction = "UP_RIGHT";
             break;
-        case DOWN_LEFT:
+        case directions::DOWN_LEFT:
             direction = "DOWN_LEFT";
             break;
-        case DOWN_RIGHT:
+        case directions::DOWN_RIGHT:
             direction = "DOWN_RIGHT";
             break;
     }

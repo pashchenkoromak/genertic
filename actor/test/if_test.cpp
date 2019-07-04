@@ -17,36 +17,38 @@ void testIf(const std::vector<char>& gen, const long long finalEnergy, const boo
 TEST(ParseIFExpression, JustBoolConsts)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::MORE,
-             CommandLength::BOOL, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             5,
-             CommandLength::NUMBER, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             3,
-             CommandLength::NUMBER, // 4
-             20,
-             CommandLength::GOTO, // 6
-             10,
-             CommandLength::GOTO); // 6
+    appender(gen,
+             std::make_pair(boolMath::MORE,
+                            CommandLength::BOOL), // 4
+             std::make_pair(maths::NUMBER_CONST,
+                            CommandLength::MATH), // 3
+             std::make_pair(5,
+                            CommandLength::NUMBER), // 4
+             std::make_pair(maths::NUMBER_CONST,
+                            CommandLength::MATH), // 3
+             std::make_pair(3,
+                            CommandLength::NUMBER), // 4
+             std::make_pair(20,
+                            CommandLength::GOTO), // 6
+             std::make_pair(10,
+                            CommandLength::GOTO)); // 6
     testIf(gen, START_ENERGY - 3, 20);
 
     gen.clear();
-    appender(gen, boolMath::LESS,
-             CommandLength::BOOL, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             5,
-             CommandLength::NUMBER, // 4
-             maths::NUMBER_CONST,
-             CommandLength::MATH, // 3
-             3,
-             CommandLength::NUMBER, // 4
-             20,
-             CommandLength::GOTO, // 6
-             10, CommandLength::GOTO);
+    appender(gen,
+             std::make_pair(boolMath::LESS,
+                            CommandLength::BOOL), // 4
+             std::make_pair(maths::NUMBER_CONST,
+                            CommandLength::MATH), // 3
+             std::make_pair(5,
+                            CommandLength::NUMBER), // 4
+             std::make_pair(maths::NUMBER_CONST,
+                            CommandLength::MATH), // 3
+             std::make_pair(3,
+                            CommandLength::NUMBER), // 4
+             std::make_pair(20,
+                            CommandLength::GOTO), // 6
+             std::make_pair(10, CommandLength::GOTO));
 
     testIf(gen, START_ENERGY - 3, 10);
 }
@@ -66,8 +68,8 @@ void testNextTurn(const std::vector<char>& gen, const long long finalEnergy, con
 TEST(ParseEndless, Must_Die)
 {
     std::vector<char> gen;
-    appender(gen, operationType::GOTO, CommandLength::OPERATION, 0, CommandLength::NUMBER);
-    Operation die;
-    die.type = operationType::DIE;
+    appender(gen, std::make_pair(operationType::GOTO, CommandLength::OPERATION),
+             std::make_pair(0, CommandLength::NUMBER));
+    Operation die(operationType::DIE);
     testNextTurn(gen, 0, die);
 }

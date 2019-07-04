@@ -23,6 +23,9 @@ public:
     /// @note Be care: you'll have 2 actors with equals id
     Actor(const Actor& rhs) = default;
 
+    /// @brief move constructor
+    Actor(Actor&& rhs);
+
     /// @brief mutation of genom
     /// @result some changes in genom
     virtual void mutation();

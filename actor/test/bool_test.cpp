@@ -21,12 +21,14 @@ void testBool(const std::vector<char>& gen, const size_t resultPos, const long l
 TEST(ParseBoolExpression, Const)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::BOOL_CONST, CommandLength::BOOL, false, CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(false, CommandLength::CONST_BOOL));
     size_t finalPos = CommandLength::BOOL + CommandLength::CONST_BOOL;
     testBool(gen, finalPos, START_ENERGY - 1, false);
 
     gen.clear();
-    appender(gen, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(true, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 1, true);
 }
 
@@ -34,14 +36,18 @@ TEST(ParseBoolExpression, Const)
 TEST(ParseBoolExpression, And)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::AND, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(
+        gen, std::make_pair(boolMath::AND, CommandLength::BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(true, CommandLength::CONST_BOOL));
     size_t finalPos = CommandLength::BOOL * 3 + CommandLength::CONST_BOOL * 2;
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::AND, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::AND, CommandLength::BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(true, CommandLength::CONST_BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(true, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 }
 
@@ -49,14 +55,18 @@ TEST(ParseBoolExpression, And)
 TEST(ParseBoolExpression, Or)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::OR, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(
+        gen, std::make_pair(boolMath::OR, CommandLength::BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(true, CommandLength::CONST_BOOL));
     size_t finalPos = CommandLength::BOOL * 3 + CommandLength::CONST_BOOL * 2;
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::OR, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false, CommandLength::CONST_BOOL);
+    appender(
+        gen, std::make_pair(boolMath::OR, CommandLength::BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 }
 
@@ -64,19 +74,25 @@ TEST(ParseBoolExpression, Or)
 TEST(ParseBoolExpression, Xor)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::XOR, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(
+        gen, std::make_pair(boolMath::XOR, CommandLength::BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(true, CommandLength::CONST_BOOL));
     size_t finalPos = CommandLength::BOOL * 3 + CommandLength::CONST_BOOL * 2;
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::XOR, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, false, CommandLength::CONST_BOOL);
+    appender(
+        gen, std::make_pair(boolMath::XOR, CommandLength::BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL),
+        std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(false, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::XOR, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true,
-             CommandLength::CONST_BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true, CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::XOR, CommandLength::BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL), std::make_pair(true, CommandLength::CONST_BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(true, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 }
 
@@ -84,14 +100,16 @@ TEST(ParseBoolExpression, Xor)
 TEST(ParseBoolExpression, More)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::MORE, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::MORE, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::MORE, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 1,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::MORE, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 }
 
@@ -99,14 +117,16 @@ TEST(ParseBoolExpression, More)
 TEST(ParseBoolExpression, Less)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::LESS, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::LESS, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::LESS, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 1,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::LESS, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 }
 
@@ -114,19 +134,22 @@ TEST(ParseBoolExpression, Less)
 TEST(ParseBoolExpression, More_Equal)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::MORE_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::MORE_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::MORE_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::MORE_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::MORE_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 3, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::MORE_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(3, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 }
 
@@ -134,19 +157,22 @@ TEST(ParseBoolExpression, More_Equal)
 TEST(ParseBoolExpression, Less_Equal)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::LESS_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::LESS_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::LESS_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::LESS_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::LESS_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 3, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::LESS_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(3, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 }
 
@@ -154,19 +180,22 @@ TEST(ParseBoolExpression, Less_Equal)
 TEST(ParseBoolExpression, Equal)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 3, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(3, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 }
 
@@ -174,19 +203,22 @@ TEST(ParseBoolExpression, Equal)
 TEST(ParseBoolExpression, No_Equal)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::NO_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 1, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::NO_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(1, CommandLength::NUMBER));
     size_t finalPos = CommandLength::BOOL + CommandLength::MATH * 2 + CommandLength::NUMBER * 2;
     testBool(gen, finalPos, START_ENERGY - 3, true);
 
     gen.clear();
-    appender(gen, boolMath::NO_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 2, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::NO_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, false);
 
     gen.clear();
-    appender(gen, boolMath::NO_EQUAL, CommandLength::BOOL, maths::NUMBER_CONST, CommandLength::MATH, 2,
-             CommandLength::NUMBER, maths::NUMBER_CONST, CommandLength::MATH, 3, CommandLength::NUMBER);
+    appender(gen, std::make_pair(boolMath::NO_EQUAL, CommandLength::BOOL),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(2, CommandLength::NUMBER),
+             std::make_pair(maths::NUMBER_CONST, CommandLength::MATH), std::make_pair(3, CommandLength::NUMBER));
     testBool(gen, finalPos, START_ENERGY - 3, true);
 }
 
@@ -194,13 +226,15 @@ TEST(ParseBoolExpression, No_Equal)
 TEST(ParseBoolExpression, No)
 {
     std::vector<char> gen;
-    appender(gen, boolMath::NO, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true,
-             CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::NO, CommandLength::BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(true, CommandLength::CONST_BOOL));
     size_t finalPos = CommandLength::BOOL * 2 + CommandLength::CONST_BOOL;
     testBool(gen, finalPos, START_ENERGY - 2, false);
 
     gen.clear();
-    appender(gen, boolMath::NO, CommandLength::BOOL, boolMath::BOOL_CONST, CommandLength::BOOL, true,
-             CommandLength::CONST_BOOL);
+    appender(gen, std::make_pair(boolMath::NO, CommandLength::BOOL),
+             std::make_pair(boolMath::BOOL_CONST, CommandLength::BOOL),
+             std::make_pair(true, CommandLength::CONST_BOOL));
     testBool(gen, finalPos, START_ENERGY - 2, false);
 }

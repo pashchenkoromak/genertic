@@ -5,9 +5,9 @@ Genom::Genom()
     std::vector<char> append;
     for (; m_genom.size() < Genom::DEFAULT_SIZE;) {
         if (rand() % 50 == 0)
-            append = intToChar(operationType::MAKE_CHILD, CommandLength::OPERATION);
+            append = intToChar(static_cast<int>(operationType::MAKE_CHILD), CommandLength::OPERATION);
         else
-            append = intToChar(rand() % operationType::TYPE_COUNT, CommandLength::OPERATION);
+            append = intToChar(rand() % static_cast<int>(operationType::TYPE_COUNT), CommandLength::OPERATION);
         m_genom.insert(m_genom.end(), append.begin(), append.end());
     }
 }
@@ -24,40 +24,40 @@ void Genom::mutation()
         chromosomeMutation();
 }
 
-Operation Genom::nextMove(long long& energy)
+Operation Genom::nextMove(long long& energy, bool canMutate /* = true */)
 {
-    if (rand() % 10000 == 0) mutation();
+    if (canMutate && rand() % 10000 == 0) mutation();
     Operation doNow;
-    while (!doNow.isWorldOperation() && energy > 0) {
+    while (energy >= 0 && !doNow.isWorldOperation()) {
         operationType type = static_cast<operationType>(getNextOperation(m_nextMoveNum));
         m_nextMoveNum = (m_nextMoveNum + CommandLength::OPERATION) % m_genom.size();
         doNow.type = type;
         switch (type) {
-            case GOTO:
+            case operationType::GOTO:
                 m_nextMoveNum = parseGoto(m_nextMoveNum) % m_genom.size();
                 break;
-            case PHOTOSYNTESIS:
+            case operationType::PHOTOSYNTESIS:
                 doNow.type = operationType::PHOTOSYNTESIS;
                 break;
-            case TILL:
+            case operationType::TILL:
                 doNow.type = operationType::TILL;
                 break;
-            case WAIT:
+            case operationType::WAIT:
                 doNow.type = operationType::WAIT;
                 break;
-            case GO:
+            case operationType::GO:
                 doNow = parseGo();
                 break;
-            case SEE:
+            case operationType::SEE:
                 doNow = parseSee();
                 break;
-            case IF:
+            case operationType::IF:
                 m_nextMoveNum = parseIf(energy) % m_genom.size();
                 break;
-            case MAKE_CHILD:
+            case operationType::MAKE_CHILD:
                 doNow = parseMakeChild();
                 break;
-            case ATTACK:
+            case operationType::ATTACK:
                 doNow = parseAttack();
                 break;
         }
@@ -65,8 +65,10 @@ Operation Genom::nextMove(long long& energy)
     }
     if (energy >= 0)
         return doNow;
-    else
+    else {
+        energy = 0;
         return operationType::DIE;
+    }
 }
 
 void Genom::genomMutation()
@@ -201,7 +203,7 @@ size_t Genom::getNextOperation(const size_t startCommand, const size_t commandLe
     auto first = m_genom.begin() + command;
     auto last = m_genom.begin() + command + commandLength;
     std::vector<char> subVec(first, last);
-    return Operation::parseOperationType(subVec);
+    return static_cast<size_t>(Operation::parseOperationType(subVec));
 }
 
 /*
@@ -221,29 +223,29 @@ int Genom::parseExpression(const size_t startCommand, long long& energy, size_t&
     next = startCommand + CommandLength::MATH;
     maths nextCommand = static_cast<maths>(getNextOperation(startCommand, CommandLength::MATH));
     switch (nextCommand) {
-        case NUMBER_CONST:
+        case maths::NUMBER_CONST:
             result = getNextOperation(next, CommandLength::NUMBER);
             next += CommandLength::NUMBER;
             break;
-        case PLUS:
+        case maths::PLUS:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = lhs + rhs;
             break;
-        case MINUS:
+        case maths::MINUS:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = lhs - rhs;
             break;
-        case ENERGY:
+        case maths::ENERGY:
             result = energy;
             break;
-        case MULTIPLE:
+        case maths::MULTIPLE:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = lhs * rhs;
             break;
-        case DIVIDE:
+        case maths::DIVIDE:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             if (rhs == 0)
@@ -251,7 +253,7 @@ int Genom::parseExpression(const size_t startCommand, long long& energy, size_t&
             else
                 result = lhs / rhs;
             break;
-        case REST_DEVIDE:
+        case maths::REST_DEVIDE:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             if (rhs == 0)
@@ -259,7 +261,7 @@ int Genom::parseExpression(const size_t startCommand, long long& energy, size_t&
             else
                 result = lhs % rhs;
             break;
-        case ANSWER:
+        case maths::ANSWER:
             result = getNextOperation(next, CommandLength::ANSWER);
             next += CommandLength::ANSWER;
             break;
@@ -286,56 +288,56 @@ bool Genom::parseBoolExpression(const size_t startCommand, long long& energy, si
     next = startCommand + CommandLength::BOOL;
     boolMath nextCommand = static_cast<boolMath>(getNextOperation(startCommand, CommandLength::BOOL));
     switch (nextCommand) {
-        case MORE:
+        case boolMath::MORE:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs > rhs);
             break;
-        case MORE_EQUAL:
+        case boolMath::MORE_EQUAL:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs >= rhs);
             break;
-        case LESS:
+        case boolMath::LESS:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs < rhs);
             break;
-        case LESS_EQUAL:
+        case boolMath::LESS_EQUAL:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs <= rhs);
             break;
-        case EQUAL:
+        case boolMath::EQUAL:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs == rhs);
             break;
-        case NO_EQUAL:
+        case boolMath::NO_EQUAL:
             lhs = parseExpression(next, energy, next);
             rhs = parseExpression(next, energy, next);
             result = (lhs != rhs);
             break;
-        case AND:
+        case boolMath::AND:
             b_lhs = parseBoolExpression(next, energy, next);
             b_rhs = parseBoolExpression(next, energy, next);
             result = (b_lhs && b_rhs);
             break;
-        case OR:
+        case boolMath::OR:
             b_lhs = parseBoolExpression(next, energy, next);
             b_rhs = parseBoolExpression(next, energy, next);
             result = (b_lhs || b_rhs);
             break;
-        case NO:
+        case boolMath::NO:
             value = parseBoolExpression(next, energy, next);
             result = (!value);
             break;
-        case XOR:
+        case boolMath::XOR:
             b_lhs = parseBoolExpression(next, energy, next);
             b_rhs = parseBoolExpression(next, energy, next);
             result = (b_lhs ^ b_rhs);
             break;
-        case BOOL_CONST:
+        case boolMath::BOOL_CONST:
             result = getNextOperation(next, CommandLength::CONST_BOOL);
             next += CommandLength::CONST_BOOL;
             break;

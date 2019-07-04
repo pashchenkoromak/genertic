@@ -21,10 +21,11 @@ public:
     virtual void mutation();
 
     /// @brief makes next move, due to genom.
-    /// @param[out] energy - need energy for every iteration of thinking.
-    /// On finish energy will be decreased due to algorithm coded in genom.
+    /// @param[in] canMutate - on true, with a small probability genom will mutate.
+    /// @param[out] energy - count of thinking iterations cannot be more, than energy.
+    /// If energy is <0 - must return operation 'die'.
     /// @return Operation struct with command to the World.
-    virtual Operation nextMove(long long& energy);
+    virtual Operation nextMove(long long& energy, bool canMutate = true);
 
 protected:
     /// @brief change count of genes
