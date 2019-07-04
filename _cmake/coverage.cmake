@@ -3,9 +3,6 @@ function(enable_coverage CUR_TARGET)
         target_compile_options(${CUR_TARGET} PRIVATE
             -fprofile-arcs
             -ftest-coverage
-            )
-
-        target_link_libraries(${CUR_TARGET} PRIVATE
             -lgcov
             )
     else()
